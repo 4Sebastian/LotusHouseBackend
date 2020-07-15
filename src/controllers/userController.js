@@ -37,7 +37,7 @@ router.route('/login').post(async (req, res) => {
         const compareRes = await bcrypt.compare(password, users[0].hashedPassword);
 
         try {
-            if (compareRes) {
+            if (compareRes && userName == users[0]) {
                 const token = jwt.sign(
                     {
                         userID: userName
