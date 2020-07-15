@@ -41,11 +41,11 @@ router.route('/login').post(async (req, res) => {
                 const token = jwt.sign(
                     {
                         userID: userName
-                
+
                     },
                     secret,
-                    { 
-                        expiresIn: 60 * 60 
+                    {
+                        expiresIn: 60 * 60
                     }
                 );
                 console.log("logged in");
@@ -149,37 +149,54 @@ router.put('/updatePassword', authCheck, async function (req, res) {
 
 
 router.post('/passwordResetRequest', authCheck, async (req, res) => {
+    const userName = req.body.username
     const email = req.body.email;
     const buffer = await crypto.randomBytes(32);
     const passwordResetToken = buffer.toString("hex");
     try {
         User.find((err, users) => {
-            users[0].passwordResetToken = passwordResetToken;
-            users[0].save();
+            if (userName == users[0].userName && email == users[0].email) {
+                users[0].passwordResetToken = passwordResetToken;
+                users[0].save();
+                //const passwordResetUrl = `${"" + process.env.FRONTEND_URL}/passwordReset?passwordResetToken=${passwordResetToken}`;
+                sgMail.setApiKey("" + process.env.SENDGRID_KEY);
+                const msg =
+                {
+                    to: '' + email,
+                    from: '' + process.env.FROM_EMAIL,
+                    subject: 'Password Reset Request',
+                    text: `Dear user,You can reset your password with this code: ${passwordResetToken}. Enter this code in the app to change your password.`,
+                    html: `<p>Dear user,</p>
+                <p>
+                    You can reset your password with this code:
+                </p>
+                <p>
+                    <h1>${passwordResetToken}</h1>
+                </p>
+                <p>
+                    Enter this code in the app to change your password.
+                </p>
+                `,
+                };
+                sgMail.send(msg);
+                res.send({ message: 'Successfully sent email' });
+            } else {
+                if (!userName || !email) {
+                    if (!userName) {
+                        return res.send({
+                            error: 'User name required'
+                        })
+                    }
+                    if (!email) {
+                        return res.send({
+                            error: 'Email required'
+                        })
+                    }
+                }else{
+                    return res.send({ error: 'Please check username and email'})
+                }
+            }
         });
-        const passwordResetUrl = `${"" + process.env.FRONTEND_URL}/passwordReset?passwordResetToken=${passwordResetToken}`;
-        sgMail.setApiKey("" + process.env.SENDGRID_KEY);
-        const msg = 
-        {
-            to: '' + email,
-            from: '' + process.env.FROM_EMAIL,
-            subject: 'Password Reset Request',
-            text: `Dear user,You can reset your password with this code: ${passwordResetToken}. Enter this code in the app to change your password.`,
-            html: `<p>Dear user,</p>
-            <p>
-                You can reset your password with this code:
-            </p>
-            <p>
-                <h1>${passwordResetToken}</h1>
-            </p>
-            <p>
-                Enter this code in the app to change your password.
-            </p>
-        `,
-        
-        };
-        sgMail.send(msg);
-        res.send({ message: 'Successfully sent email' });
     }
     catch (ex) {
         console.log(ex);
@@ -192,16 +209,16 @@ router.post('/passwordReset', async (req, res) => {
     const password = req.body.hashedPassword;
     const passwordResetToken = req.body.passwordResetToken;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    
+
     try {
         User.find((err, users) => {
-            if(passwordResetToken == users[0].passwordResetToken){
-            const buffer = crypto.randomBytes(32);
-            const newPasswordResetToken = buffer.toString("hex");
-            users[0].hashedPassword = hashedPassword;
-            users[0].passwordResetToken = newPasswordResetToken;
-            users[0].save();
-            res.send({ message: 'Successfully reset password' });
+            if (passwordResetToken == users[0].passwordResetToken) {
+                const buffer = crypto.randomBytes(32);
+                const newPasswordResetToken = buffer.toString("hex");
+                users[0].hashedPassword = hashedPassword;
+                users[0].passwordResetToken = newPasswordResetToken;
+                users[0].save();
+                res.send({ message: 'Successfully reset password' });
             }
         });
     }
