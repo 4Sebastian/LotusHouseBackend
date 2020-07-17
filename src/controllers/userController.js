@@ -179,7 +179,7 @@ router.post('/passwordResetRequest', async (req, res) => {
                 `,
                 };
                 sgMail.send(msg);
-                res.send({ message: 'Successfully sent email' });
+                res.send({ msges: 'Successfully sent email' });
             } else {
                 if (!userName || !email) {
                     if (!userName) {
