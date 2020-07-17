@@ -148,7 +148,7 @@ router.put('/updatePassword', authCheck, async function (req, res) {
 });
 
 
-router.post('/passwordResetRequest', authCheck, async (req, res) => {
+router.post('/passwordResetRequest', async (req, res) => {
     const userName = req.body.username
     const email = req.body.email;
     const buffer = await crypto.randomBytes(32);
