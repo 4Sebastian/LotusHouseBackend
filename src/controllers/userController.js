@@ -208,17 +208,19 @@ router.post('/passwordResetRequest', async (req, res) => {
 router.post('/passwordReset', async (req, res) => {
     const password = req.body.hashedPassword;
     const passwordResetToken = req.body.passwordResetToken;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
+    
     try {
-        User.find((err, users) => {
+        User.find(async (err, users) => {
             if (passwordResetToken == users[0].passwordResetToken) {
                 const buffer = crypto.randomBytes(32);
                 const newPasswordResetToken = buffer.toString("hex");
+                const hashedPassword = await bcrypt.hash(password, saltRounds);
                 users[0].hashedPassword = hashedPassword;
                 users[0].passwordResetToken = newPasswordResetToken;
                 users[0].save();
                 res.send({ message: 'Successfully reset password' });
+            }else{
+                res.send({ message: 'incorrect token' });
             }
         });
     }
