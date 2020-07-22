@@ -40,16 +40,7 @@ connection.once('open', () => {
 
 
 //Arrays
-router.route('/issues').get((req, res) => {
-    Issue.find((err, issues) => {
-        if (err)
-            console.log(err);
-        else
-            res.json(issues);
-    });
-});
-
-router.route('/events').get((req, res) => {
+router.route('/events/:date').get((req, res) => {
     Event.find((err, events) => {
         if (err)
             console.log(err);
@@ -58,7 +49,7 @@ router.route('/events').get((req, res) => {
     });
 });
 
-router.route ('/rooms').get((req, res) => {
+router.route ('/rooms/:date').get((req, res) => {
     Room.find((err, rooms) => {
         if (err)
             console.log(err);
@@ -69,16 +60,7 @@ router.route ('/rooms').get((req, res) => {
 
 
 //Individual Indexes
-router.route('/issues/:id').get((req, res) => {
-    Issue.findById(req.params.id, (err, issue) => {
-        if (err)
-            console.log(err);
-        else
-            res.json(issue);
-    });
-});
-
-router.route('/events/:id').get((req, res) => {
+router.route('/events/:date/:id').get((req, res) => {
     Event.findById(req.params.id, (err, event) =>{
         if (err)
             console.log(err);
@@ -87,7 +69,7 @@ router.route('/events/:id').get((req, res) => {
     });
 });
 
-router.route('/rooms/:id').get((req, res) => {
+router.route('/rooms/:date/:id').get((req, res) => {
     Room.findById(req.params.id, (err, room) =>{
         if (err)
             console.log(err);
@@ -98,18 +80,7 @@ router.route('/rooms/:id').get((req, res) => {
 
 
 //Add to each Array
-router.route('/issues/add').post((req, res) => {
-    let issue = new Issue(req.body);
-    issue.save()
-        .then(issue => {
-            res.status(200).json({ 'issue': 'Added succesfully' });
-        })
-        .catch(err => {
-            res.status(400).send('Failed to create new record');
-        });
-});
-
-router.route('/events/add').post((req, res) => {
+router.route('/events/:date/add').post((req, res) => {
     let event = new Event(req.body);
     event.save()
         .then(event => {
@@ -120,7 +91,7 @@ router.route('/events/add').post((req, res) => {
         });
 });
 
-router.route('/rooms/add').post((req, res) => {
+router.route('/rooms/:date/add').post((req, res) => {
     let room = new Room(req.body);
     room.save()
         .then(room => {
@@ -133,27 +104,7 @@ router.route('/rooms/add').post((req, res) => {
 
 
 //Update Individual Indexes
-router.route('/issues/update/:id').post((req, res) => {
-    Issue.findById(req.params.id, (err, issue) => {
-        if (!issue)
-            return next(new Error('Could not load document'));
-        else {
-            issue.title = req.body.title;
-            issue.responsible = req.body.responsible;
-            issue.description = req.body.description;
-            issue.severity = req.body.severity;
-            issue.status = req.body.status;
-
-            issue.save().then(issue => {
-                res.json('Update done');
-            }).catch(err => {
-                res.status(400).send('Update failed');
-            });
-        }
-    });
-});
-
-router.route('/events/update/:id').post((req, res) => {
+router.route('/events/:date/update/:id').post((req, res) => {
     Event.findById(req.params.id, (err, event) => {
         if (!event)
             return next(new Error('Could not load document'));
@@ -171,7 +122,7 @@ router.route('/events/update/:id').post((req, res) => {
     });
 });
 
-router.route('/rooms/update/:id').post((req, res) => {
+router.route('/rooms/:date/update/:id').post((req, res) => {
     Room.findById(req.params.id, (err, room) => {
         if (!room)
             return next(new Error('Could not load document'));
@@ -191,16 +142,7 @@ router.route('/rooms/update/:id').post((req, res) => {
 
 
 //Delete Individual Indexes
-router.route('/issues/delete/:id').get((req, res) => {
-    Issue.findByIdAndRemove({ _id: req.params.id }, (err, issue) => {
-        if (err)
-            res.json(err);
-        else
-            res.json('Remove successfully');
-    });
-});
-
-router.route('/events/delete/:id').get((req, res) => {
+router.route('/events/:date/delete/:id').get((req, res) => {
     Event.findByIdAndRemove({ _id: req.params.id }, (err, event) => {
         if (err)
             res.json(err);
@@ -209,7 +151,7 @@ router.route('/events/delete/:id').get((req, res) => {
     });
 });
 
-router.route('/rooms/delete/:id').get((req, res) => {
+router.route('/rooms/:date/delete/:id').get((req, res) => {
     Room.findByIdAndRemove({ _id: req.params.id }, (err, room) => {
         if (err)
             res.json(err);
