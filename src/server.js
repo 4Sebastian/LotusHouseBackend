@@ -40,7 +40,7 @@ connection.once('open', () => {
 
 
 //Arrays
-router.route('/:date/events').get((req, res) => {
+router.route('/events/:date').get((req, res) => {
     Event.find((err, events) => {
         if (err)
             console.log(err);
@@ -49,7 +49,7 @@ router.route('/:date/events').get((req, res) => {
     });
 });
 
-router.route ('/:date/rooms').get((req, res) => {
+router.route ('/rooms/:date').get((req, res) => {
     Room.find((err, rooms) => {
         if (err)
             console.log(err);
@@ -60,7 +60,7 @@ router.route ('/:date/rooms').get((req, res) => {
 
 
 //Individual Indexes
-router.route('/:date/events/:id').get((req, res) => {
+router.route('/events/:date/:id').get((req, res) => {
     Event.findById(req.params.id, (err, event) =>{
         if (err)
             console.log(err);
@@ -69,7 +69,7 @@ router.route('/:date/events/:id').get((req, res) => {
     });
 });
 
-router.route('/:date/rooms/:id').get((req, res) => {
+router.route('/rooms/:date/:id').get((req, res) => {
     Room.findById(req.params.id, (err, room) =>{
         if (err)
             console.log(err);
@@ -80,7 +80,7 @@ router.route('/:date/rooms/:id').get((req, res) => {
 
 
 //Add to each Array
-router.route('/:date/events/add').post((req, res) => {
+router.route('/events/:date/add').post((req, res) => {
     let event = new Event(req.body);
     event.save()
         .then(event => {
@@ -91,7 +91,7 @@ router.route('/:date/events/add').post((req, res) => {
         });
 });
 
-router.route('/:date/rooms/add').post((req, res) => {
+router.route('/rooms/:date/add').post((req, res) => {
     let room = new Room(req.body);
     room.save()
         .then(room => {
@@ -104,7 +104,7 @@ router.route('/:date/rooms/add').post((req, res) => {
 
 
 //Update Individual Indexes
-router.route('/:date/events/update/:id').post((req, res) => {
+router.route('/events/:date/update/:id').post((req, res) => {
     Event.findById(req.params.id, (err, event) => {
         if (!event)
             return next(new Error('Could not load document'));
@@ -122,7 +122,7 @@ router.route('/:date/events/update/:id').post((req, res) => {
     });
 });
 
-router.route('/:date/rooms/update/:id').post((req, res) => {
+router.route('/rooms/:date/update/:id').post((req, res) => {
     Room.findById(req.params.id, (err, room) => {
         if (!room)
             return next(new Error('Could not load document'));
@@ -142,7 +142,7 @@ router.route('/:date/rooms/update/:id').post((req, res) => {
 
 
 //Delete Individual Indexes
-router.route('/:date/events/delete/:id').get((req, res) => {
+router.route('/events/:date/delete/:id').get((req, res) => {
     Event.findByIdAndRemove({ _id: req.params.id }, (err, event) => {
         if (err)
             res.json(err);
@@ -151,7 +151,7 @@ router.route('/:date/events/delete/:id').get((req, res) => {
     });
 });
 
-router.route('/:date/rooms/delete/:id').get((req, res) => {
+router.route('/rooms/:date/delete/:id').get((req, res) => {
     Room.findByIdAndRemove({ _id: req.params.id }, (err, room) => {
         if (err)
             res.json(err);
