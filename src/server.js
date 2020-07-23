@@ -40,8 +40,8 @@ connection.once('open', () => {
 
 
 //Arrays
-router.route('/events/:date').get((req, res) => {
-    Event.find((err, events) => {
+router.route('/events/:formDate').get((req, res) => {
+    Event.find({date: req.params.formDate} ,(err, events) => {
         if (err)
             console.log(err);
         else  

@@ -3,6 +3,9 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 let Room = new Schema({
+    formDate: {
+        type: String
+    },
     name: {
         type: String
     },
