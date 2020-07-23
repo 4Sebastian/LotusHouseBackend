@@ -49,8 +49,8 @@ router.route('/events/:formDate').get((req, res) => {
     });
 });
 
-router.route ('/rooms/:date').get((req, res) => {
-    Room.find((err, rooms) => {
+router.route ('/rooms/:formDate').get((req, res) => {
+    Room.find({formDate: req.params.formDate}, (err, rooms) => {
         if (err)
             console.log(err);
         else
@@ -60,28 +60,33 @@ router.route ('/rooms/:date').get((req, res) => {
 
 
 //Individual Indexes
-router.route('/events/:date/:id').get((req, res) => {
-    Event.findById(req.params.id, (err, event) =>{
-        if (err)
-            console.log(err);
-        else
-            res.json(event);
+router.route('/events/:formDate/:id').get((req, res) => {
+    Event.find({formDate: req.params.formDate}, (err, events) => {
+        events.findById(req.params.id, (err, event) => {
+            if (err)
+                console.log(err);
+            else
+                res.json(event);
+        });
     });
 });
 
-router.route('/rooms/:date/:id').get((req, res) => {
-    Room.findById(req.params.id, (err, room) =>{
-        if (err)
-            console.log(err);
-        else
-            res.json(room);
+router.route('/rooms/:formDate/:id').get((req, res) => {
+    Room.find({formDate: req.params.formDate}, (err, rooms) =>{ 
+        rooms.findById(req.params.id, (err, room) =>{
+            if (err)
+                console.log(err);
+            else
+                res.json(room);
+        });
     });
 });
 
 
 //Add to each Array
-router.route('/events/:date/add').post((req, res) => {
+router.route('/events/:formDate/add').post((req, res) => {
     let event = new Event(req.body);
+    event.formDate = req.params.formDate;
     event.save()
         .then(event => {
             res.status(200).json({ 'event': 'Added succesfully' });
@@ -91,8 +96,9 @@ router.route('/events/:date/add').post((req, res) => {
         });
 });
 
-router.route('/rooms/:date/add').post((req, res) => {
+router.route('/rooms/:formDate/add').post((req, res) => {
     let room = new Room(req.body);
+    room.formDate = req.params.formDate;
     room.save()
         .then(room => {
             res.status(200).json({ 'issue': 'Added succesfully' });
@@ -104,59 +110,67 @@ router.route('/rooms/:date/add').post((req, res) => {
 
 
 //Update Individual Indexes
-router.route('/events/:date/update/:id').post((req, res) => {
-    Event.findById(req.params.id, (err, event) => {
-        if (!event)
-            return next(new Error('Could not load document'));
-        else {
-            event.title = req.body.title;
-            event.date = req.body.date;
-            event.description = req.body.description;
+router.route('/events/:formDate/update/:id').post((req, res) => {
+    Event.find({formDate: req.params.formDate}, (err, events) => {
+        events.findById(req.params.id, (err, event) => {
+            if (!event)
+                return next(new Error('Could not load document'));
+            else {
+                event.title = req.body.title;
+                event.date = req.body.date;
+                event.description = req.body.description;
 
-            event.save().then(event => {
-                res.json('Update done');
-            }).catch(err => {
-                res.status(400).send('Update failed');
-            });
-        }
+                event.save().then(event => {
+                    res.json('Update done');
+                }).catch(err => {
+                    res.status(400).send('Update failed');
+                });
+            }
+        });
     });
 });
 
-router.route('/rooms/:date/update/:id').post((req, res) => {
-    Room.findById(req.params.id, (err, room) => {
-        if (!room)
-            return next(new Error('Could not load document'));
-        else {
-            room.name = req.body.name;
-            room.number = req.body.number;
-            room.events = req.body.events;
+router.route('/rooms/:formDate/update/:id').post((req, res) => {
+    Room.find({formDate: req.params.formDate}, (err, rooms) => {
+        rooms.findById(req.params.id, (err, room) => {
+            if (!room)
+                return next(new Error('Could not load document'));
+            else {
+                room.name = req.body.name;
+                room.number = req.body.number;
+                room.events = req.body.events;
 
-            room.save().then(room => {
-                res.json('Update done');
-            }).catch(err => {
-                res.status(400).send('Update failed');
-            });
-        }
+                room.save().then(room => {
+                    res.json('Update done');
+                }).catch(err => {
+                    res.status(400).send('Update failed');
+                });
+            }
+        });
     });
 });
 
 
 //Delete Individual Indexes
-router.route('/events/:date/delete/:id').get((req, res) => {
-    Event.findByIdAndRemove({ _id: req.params.id }, (err, event) => {
-        if (err)
-            res.json(err);
-        else
-            res.json('Remove successfully');
+router.route('/events/:formDate/delete/:id').get((req, res) => {
+    Event.find({formDate: req.params.formDate}, (err, events) => {
+        events.findByIdAndRemove({ _id: req.params.id }, (err, event) => {
+            if (err)
+                res.json(err);
+            else
+                res.json('Remove successfully');
+        });
     });
 });
 
-router.route('/rooms/:date/delete/:id').get((req, res) => {
-    Room.findByIdAndRemove({ _id: req.params.id }, (err, room) => {
-        if (err)
-            res.json(err);
-        else
-            res.json('Remove successfully');
+router.route('/rooms/:formDate/delete/:id').get((req, res) => {
+    Room.find({formDate: req.params.formDate}, (err, rooms) => {
+        rooms.findByIdAndRemove({ _id: req.params.id }, (err, room) => {
+            if (err)
+                res.json(err);
+            else
+                res.json('Remove successfully');
+        });
     });
 });
 
