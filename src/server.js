@@ -1,11 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import mongoose, { Document } from 'mongoose';
 
-import Issue from './models/issue';
 import Event from './models/event';
 import Room from './models/room';
+import { MongooseDocument } from 'mongoose';
 
 const app = express();
 const router = express.Router();
@@ -20,7 +19,7 @@ const user = require('./controllers/userController');
 
 const uri = "mongodb+srv://sebastian101:0229549sp@cluster0-fgh2k.mongodb.net/Cluster0?retryWrites=true&w=majority";
 
-mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true, });
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, });
 //'mongodb://localhost:27017/issues'
 
 const connection = mongoose.connection;
@@ -41,16 +40,16 @@ connection.once('open', () => {
 
 //Arrays
 router.route('/events/:formDate').get((req, res) => {
-    Event.find({formDate: req.params.formDate} ,(err, events) => {
+    Event.find({ formDate: req.params.formDate }, (err, events) => {
         if (err)
             console.log(err);
-        else  
+        else
             res.json(events);
     });
 });
 
-router.route ('/rooms/:formDate').get((req, res) => {
-    Room.find({formDate: req.params.formDate}, (err, rooms) => {
+router.route('/rooms/:formDate').get((req, res) => {
+    Room.find({ formDate: req.params.formDate }, (err, rooms) => {
         if (err)
             console.log(err);
         else
@@ -61,24 +60,22 @@ router.route ('/rooms/:formDate').get((req, res) => {
 
 //Individual Indexes
 router.route('/events/:formDate/:id').get((req, res) => {
-    Event.find({formDate: req.params.formDate}, (err, events) => {
-        events.find({ _id: req.params.id }, (err, event) => {
-            if (err)
-                console.log(err);
-            else
-                res.json(event);
-        });
+    Event.find({ formDate: req.params.formDate }, (err, events) => {
+        let event = events.find({ _id: req.params.id });
+        if (err)
+            console.log(err);
+        else
+            res.json(event);
     });
 });
 
 router.route('/rooms/:formDate/:id').get((req, res) => {
-    Room.find({formDate: req.params.formDate}, (err, rooms) =>{ 
-        rooms.find({ _id: req.params.id }, (err, room) =>{
-            if (err)
-                console.log(err);
-            else
-                res.json(room);
-        });
+    Room.find({ formDate: req.params.formDate }, (err, rooms) => {
+        let room = rooms.find({ _id: req.params.id });
+        if (err)
+            console.log(err);
+        else
+            res.json(room);
     });
 });
 
@@ -111,70 +108,68 @@ router.route('/rooms/:formDate/add').post((req, res) => {
 
 //Update Individual Indexes
 router.route('/events/:formDate/update/:id').post((req, res) => {
-    Event.find({formDate: req.params.formDate}, (err, events) => {
-        events.find({ _id: req.params.id }, (err, event) => {
-            if (!event)
-                return next(new Error('Could not load document'));
-            else {
-                event.title = req.body.title;
-                event.date = req.body.date;
-                event.description = req.body.description;
-                event.formDate = req.params.formDate;
+    Event.find({ formDate: req.params.formDate }, (err, events) => {
+        let event = events.find({ _id: req.params.id });
 
-                event.save().then(event => {
-                    res.json('Update done');
-                }).catch(err => {
-                    res.status(400).send('Update failed');
-                });
-            }
-        });
+        if (!event)
+            return next(new Error('Could not load document'));
+        else {
+            event.title = req.body.title;
+            event.date = req.body.date;
+            event.description = req.body.description;
+            event.formDate = req.params.formDate;
+
+            event.save().then(event => {
+                res.json('Update done');
+            }).catch(err => {
+                res.status(400).send('Update failed');
+            });
+        }
+
     });
 });
 
 router.route('/rooms/:formDate/update/:id').post((req, res) => {
-    Room.find({formDate: req.params.formDate}, (err, rooms) => {
-        rooms.find({ _id: req.params.id }, (err, room) => {
-            if (!room)
-                return next(new Error('Could not load document'));
-            else {
-                room.name = req.body.name;
-                room.number = req.body.number;
-                room.events = req.body.events;
-                room.formDate = req.params.formDate;
+    Room.find({ formDate: req.params.formDate }, (err, rooms) => {
+        let room = rooms.find({ _id: req.params.id });
+        if (!room)
+            return next(new Error('Could not load document'));
+        else {
+            room.name = req.body.name;
+            room.number = req.body.number;
+            room.events = req.body.events;
+            room.formDate = req.params.formDate;
 
-                room.save().then(room => {
-                    res.json('Update done');
-                }).catch(err => {
-                    res.status(400).send('Update failed');
-                });
-            }
-        });
+            room.save().then(room => {
+                res.json('Update done');
+            }).catch(err => {
+                res.status(400).send('Update failed');
+            });
+        }
     });
 });
 
 
 //Delete Individual Indexes
 router.route('/events/:formDate/delete/:id').get((req, res) => {
-    Event.find({formDate: req.params.formDate}, (err, events) => {
-        events.find({ _id: req.params.id }, (err, event) => {
-            event.deleteOne();
-            if (err)
-                res.json(err);
-            else
-                res.json('Remove successfully');
-        });
+    Event.find({ formDate: req.params.formDate }, (err, events) => {
+        let event = events.find({ _id: req.params.id });
+        event.deleteOne();
+        if (err)
+            res.json(err);
+        else
+            res.json('Remove successfully');
     });
 });
 
 router.route('/rooms/:formDate/delete/:id').get((req, res) => {
-    Room.find({formDate: req.params.formDate}, (err, rooms) => {
-        rooms.find({ _id: req.params.id }, (err, room) => {
-            room.deleteOne();
-            if (err)
-                res.json(err);
-            else
-                res.json('Remove successfully');
-        });
+    Room.find({ formDate: req.params.formDate }, (err, rooms) => {
+        let room = rooms.find({ _id: req.params.id });
+        room.deleteOne();
+        if (err)
+            res.json(err);
+        else
+            res.json('Remove successfully');
     });
 });
 
@@ -189,7 +184,7 @@ app.use('/user', user);
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     next();
-  });
+});
 
 
 
