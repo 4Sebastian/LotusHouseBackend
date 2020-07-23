@@ -60,22 +60,20 @@ router.route('/rooms/:formDate').get((req, res) => {
 
 //Individual Indexes
 router.route('/events/:formDate/:id').get((req, res) => {
-    Event.find({ formDate: req.params.formDate }, (err, events) => {
-        let event = events.find({ _id: req.params.id });
+    Event.find({ formDate: req.params.formDate, _id: req.params.id }, (err, events) => {
         if (err)
             console.log(err);
         else
-            res.json(event);
+            res.json(events);
     });
 });
 
 router.route('/rooms/:formDate/:id').get((req, res) => {
-    Room.find({ formDate: req.params.formDate }, (err, rooms) => {
-        let room = rooms.find({ _id: req.params.id });
+    Room.find({ formDate: req.params.formDate, _id: req.params.id }, (err, rooms) => {
         if (err)
             console.log(err);
         else
-            res.json(room);
+            res.json(rooms);
     });
 });
 
@@ -108,18 +106,16 @@ router.route('/rooms/:formDate/add').post((req, res) => {
 
 //Update Individual Indexes
 router.route('/events/:formDate/update/:id').post((req, res) => {
-    Event.find({ formDate: req.params.formDate }, (err, events) => {
-        let event = events.find({ _id: req.params.id });
-
-        if (!event)
+    Event.find({ formDate: req.params.formDate, _id: req.params.id }, (err, events) => {
+        if (!events[0])
             return next(new Error('Could not load document'));
         else {
-            event.title = req.body.title;
-            event.date = req.body.date;
-            event.description = req.body.description;
-            event.formDate = req.params.formDate;
+            events[0].title = req.body.title;
+            events[0].date = req.body.date;
+            events[0].description = req.body.description;
+            events[0].formDate = req.params.formDate;
 
-            event.save().then(event => {
+            events[0].save().then(event => {
                 res.json('Update done');
             }).catch(err => {
                 res.status(400).send('Update failed');
@@ -130,17 +126,16 @@ router.route('/events/:formDate/update/:id').post((req, res) => {
 });
 
 router.route('/rooms/:formDate/update/:id').post((req, res) => {
-    Room.find({ formDate: req.params.formDate }, (err, rooms) => {
-        let room = rooms.find({ _id: req.params.id });
-        if (!room)
+    Room.find({ formDate: req.params.formDate, _id: req.params.id }, (err, rooms) => {
+        if (!rooms[0])
             return next(new Error('Could not load document'));
         else {
-            room.name = req.body.name;
-            room.number = req.body.number;
-            room.events = req.body.events;
-            room.formDate = req.params.formDate;
+            rooms[0].name = req.body.name;
+            rooms[0].number = req.body.number;
+            rooms[0].events = req.body.events;
+            rooms[0].formDate = req.params.formDate;
 
-            room.save().then(room => {
+            rooms[0].save().then(room => {
                 res.json('Update done');
             }).catch(err => {
                 res.status(400).send('Update failed');
@@ -152,9 +147,8 @@ router.route('/rooms/:formDate/update/:id').post((req, res) => {
 
 //Delete Individual Indexes
 router.route('/events/:formDate/delete/:id').get((req, res) => {
-    Event.find({ formDate: req.params.formDate }, (err, events) => {
-        let event = events.find({ _id: req.params.id });
-        event.deleteOne();
+    Event.find({ formDate: req.params.formDate, _id: req.params.id }, (err, events) => {
+        events[0].deleteOne();
         if (err)
             res.json(err);
         else
@@ -163,9 +157,8 @@ router.route('/events/:formDate/delete/:id').get((req, res) => {
 });
 
 router.route('/rooms/:formDate/delete/:id').get((req, res) => {
-    Room.find({ formDate: req.params.formDate }, (err, rooms) => {
-        let room = rooms.find({ _id: req.params.id });
-        room.deleteOne();
+    Room.find({ formDate: req.params.formDate, _id: req.params.id }, (err, rooms) => {
+        rooms[0].deleteOne();
         if (err)
             res.json(err);
         else
