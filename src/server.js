@@ -41,7 +41,7 @@ connection.once('open', () => {
 
 //Arrays
 router.route('/events/:formDate').get((req, res) => {
-    Event.find({date: req.params.formDate} ,(err, events) => {
+    Event.find({formDate: req.params.formDate} ,(err, events) => {
         if (err)
             console.log(err);
         else  
