@@ -119,6 +119,7 @@ router.route('/events/:formDate/update/:id').post((req, res) => {
                 event.title = req.body.title;
                 event.date = req.body.date;
                 event.description = req.body.description;
+                event.formDate = req.params.formDate;
 
                 event.save().then(event => {
                     res.json('Update done');
@@ -139,6 +140,7 @@ router.route('/rooms/:formDate/update/:id').post((req, res) => {
                 room.name = req.body.name;
                 room.number = req.body.number;
                 room.events = req.body.events;
+                room.formDate = req.params.formDate;
 
                 room.save().then(room => {
                     res.json('Update done');
