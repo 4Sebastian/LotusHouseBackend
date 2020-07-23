@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 import Issue from './models/issue';
 import Event from './models/event';
@@ -62,7 +62,7 @@ router.route ('/rooms/:formDate').get((req, res) => {
 //Individual Indexes
 router.route('/events/:formDate/:id').get((req, res) => {
     Event.find({formDate: req.params.formDate}, (err, events) => {
-        events.findById(req.params.id, (err, event) => {
+        events.find({ _id: req.params.id }, (err, event) => {
             if (err)
                 console.log(err);
             else
@@ -73,7 +73,7 @@ router.route('/events/:formDate/:id').get((req, res) => {
 
 router.route('/rooms/:formDate/:id').get((req, res) => {
     Room.find({formDate: req.params.formDate}, (err, rooms) =>{ 
-        rooms.findById(req.params.id, (err, room) =>{
+        rooms.find({ _id: req.params.id }, (err, room) =>{
             if (err)
                 console.log(err);
             else
@@ -112,7 +112,7 @@ router.route('/rooms/:formDate/add').post((req, res) => {
 //Update Individual Indexes
 router.route('/events/:formDate/update/:id').post((req, res) => {
     Event.find({formDate: req.params.formDate}, (err, events) => {
-        events.findById(req.params.id, (err, event) => {
+        events.find({ _id: req.params.id }, (err, event) => {
             if (!event)
                 return next(new Error('Could not load document'));
             else {
@@ -133,7 +133,7 @@ router.route('/events/:formDate/update/:id').post((req, res) => {
 
 router.route('/rooms/:formDate/update/:id').post((req, res) => {
     Room.find({formDate: req.params.formDate}, (err, rooms) => {
-        rooms.findById(req.params.id, (err, room) => {
+        rooms.find({ _id: req.params.id }, (err, room) => {
             if (!room)
                 return next(new Error('Could not load document'));
             else {
@@ -156,7 +156,8 @@ router.route('/rooms/:formDate/update/:id').post((req, res) => {
 //Delete Individual Indexes
 router.route('/events/:formDate/delete/:id').get((req, res) => {
     Event.find({formDate: req.params.formDate}, (err, events) => {
-        events.findByIdAndRemove({ _id: req.params.id }, (err, event) => {
+        events.find({ _id: req.params.id }, (err, event) => {
+            event.deleteOne();
             if (err)
                 res.json(err);
             else
@@ -167,7 +168,8 @@ router.route('/events/:formDate/delete/:id').get((req, res) => {
 
 router.route('/rooms/:formDate/delete/:id').get((req, res) => {
     Room.find({formDate: req.params.formDate}, (err, rooms) => {
-        rooms.findByIdAndRemove({ _id: req.params.id }, (err, room) => {
+        rooms.find({ _id: req.params.id }, (err, room) => {
+            room.deleteOne();
             if (err)
                 res.json(err);
             else
