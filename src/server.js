@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 
 import Event from './models/event';
 import Room from './models/room';
-import { MongooseDocument } from 'mongoose';
+import mongoose from 'mongoose';
 
 const app = express();
 const router = express.Router();
