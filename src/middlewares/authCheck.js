@@ -17,7 +17,7 @@ exports.authCheck = async function(req, res, next) {
 
             }
             else {
-                req.body.userName = decoded.userID;
+                //req.body.uses = decoded.uses;
                 next();
             }
         });
