@@ -130,7 +130,7 @@ router.post('/signup', authCheck, async (req, res) => {
         
             }
             catch (ex) {
-                logger.error(ex);
+                console.log(ex);
                 res.status(400);
                 return res.send({ error: ex });
             }
