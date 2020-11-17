@@ -126,8 +126,6 @@ router.post('/signup', authCheck, async (req, res) => {
                         res.status(400).send('Failed to create new record');
                         console.log(err);
                     });
-        
-        
             }
             catch (ex) {
                 console.log(ex);
