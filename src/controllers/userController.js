@@ -32,8 +32,8 @@ router.post('/login', async (req, res) => {
 
     User.find(async (err, users) => {
 
-        const cnt = 0;
-        const found = false;
+        var cnt = 0;
+        var found = false;
         while(!found && cnt < users.length){
             const compareRes = await bcrypt.compare(password, users[0].hashedPassword);
             if(userName == users[cnt].userName && compareRes){
@@ -88,9 +88,9 @@ router.post('/signup', authCheck, async (req, res) => {
     }
 
     User.find(async (err, users) => {
-        const cnt = 0;
-        const found = false;
-        const msg = "";
+        var cnt = 0;
+        var found = false;
+        var msg = "";
         while(!found && cnt < users.length){
             if(userName == users[cnt].userName || email == users[cnt].email || shelterName == users[cnt].shelterName){
                 found = true;
@@ -244,8 +244,9 @@ router.post('/passwordResetRequest', async (req, res) => {
     const passwordResetToken = buffer.toString("hex");
     try {
         User.find((err, users) => {
-            const cnt = 0;
-            const found = false;
+            var cnt = 0;
+            var found = false;
+            
             while(!found && cnt < users.length){
                 if(userName == users[cnt].userName && email == users[cnt].email){
                     found = true;
@@ -309,8 +310,9 @@ router.post('/passwordReset', async (req, res) => {
 
     try {
         User.find(async (err, users) => {
-            const cnt = 0;
-            const found = false;
+            var cnt = 0;
+            var found = false;
+
             while(!found && cnt < users.length){
                 if(userName == users[cnt].userName && passwordResetToken == users[cnt].passwordResetToken){
                     found = true;
