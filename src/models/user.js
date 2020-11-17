@@ -12,6 +12,9 @@ let User = new Schema({
     email: {
         type: String
     },
+    shelterName: {
+        type: String
+    },
     passwordResetToken: {
         type: String
     }
