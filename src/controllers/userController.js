@@ -342,7 +342,7 @@ router.post('/getAllNames', async (req, res) => {
     User.find((err, users) => {
         var names = "";
         for(var i = 0; i < users.length; i++){
-            names += users.shelterName + "||";
+            names += users[i].shelterName + "||";
         }
         res.send({ message: names });
     });
