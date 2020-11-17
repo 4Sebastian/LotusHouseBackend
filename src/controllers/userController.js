@@ -255,7 +255,7 @@ router.post('/passwordResetRequest', async (req, res) => {
 });
 
 
-router.post('/passwordReset', authCheck, async (req, res) => {
+router.post('/passwordReset', async (req, res) => {
     const password = req.body.hashedPassword;
     const passwordResetToken = req.body.passwordResetToken;
     const userName = req.body.userName;
