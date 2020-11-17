@@ -31,13 +31,20 @@ router.route('/login').post(async (req, res) => {
     }
 
     User.find(async (err, users) => {
-        const secret = "" + process.env.JWT_SECRET;
 
-
-        const compareRes = await bcrypt.compare(password, users[0].hashedPassword);
-
+        const cnt = 0;
+        const found = false;
+        while(!found && cnt < users.length){
+            const compareRes = await bcrypt.compare(password, users[0].hashedPassword);
+            if(userName == users[cnt].userName && compareRes){
+                found = true;
+            }
+            cnt++;
+        }
+        
         try {
-            if (compareRes && userName == users[0].userName) {
+            if (found) {
+                const secret = "" + process.env.JWT_SECRET;
                 const token = jwt.sign(
                     {
                         userID: userName
@@ -106,6 +113,41 @@ router.route('/signup').post(async (req, res) => {
     }
 });
 
+router.post('/register', async (req, res) => {
+    const userName = req.body.name;
+    const shelterName = req.body.shelter;
+    const email = req.body.email;
+    const buffer = await crypto.randomBytes(16);
+    const verifiedToken = buffer.toString("hex");
+    try {
+        //const passwordResetUrl = `${"" + process.env.FRONTEND_URL}/passwordReset?passwordResetToken=${passwordResetToken}`;
+        sgMail.setApiKey("" + process.env.SENDGRID_KEY);
+        const msg =
+        {
+            to: 'lotushouseapp@gmail.com',
+            from: '' + process.env.FROM_EMAIL,
+            subject: 'Requested Shelter Account Creation',
+            text: `${userName} from ${shelterName}, has requested to create an account in the app. Their email to reference them is ${email}. If everything is good to go, here is the verification they would use within the next 30 days starting TODAY: ${verifiedToken}`,
+            html:  `<p>${userName} from ${shelterName},</p>
+                    <p>
+                    has requested to create an account in the app. Their email to reference them is ${email}.
+                    </p>
+                    <p>
+                    If everything is good to go, here is the verification they would use within the next 30 days starting TODAY:
+                    </p>
+                    <p>
+                        <h1>${verifiedToken}</h1>
+                    </p>`,
+        };
+        sgMail.send(msg);
+        res.send({ msges: 'Successfully sent email' });
+    }
+    catch (ex) {
+    console.log(ex);
+    res.send(ex, 500);
+    }
+});
+
 router.put('/updateUser', authCheck, async function (req, res) {
     User.find((err, users) => {
         const userName = req.body.userName;
@@ -155,9 +197,17 @@ router.post('/passwordResetRequest', async (req, res) => {
     const passwordResetToken = buffer.toString("hex");
     try {
         User.find((err, users) => {
-            if (userName == users[0].userName && email == users[0].email) {
-                users[0].passwordResetToken = passwordResetToken;
-                users[0].save();
+            const cnt = 0;
+            const found = false;
+            while(!found && cnt < users.length){
+                if(userName == users[cnt].userName && email == users[cnt].email){
+                    found = true;
+                }
+                cnt++;
+            }
+            if (found) {
+                users[cnt-1].passwordResetToken = passwordResetToken;
+                users[cnt-1].save();
                 //const passwordResetUrl = `${"" + process.env.FRONTEND_URL}/passwordReset?passwordResetToken=${passwordResetToken}`;
                 sgMail.setApiKey("" + process.env.SENDGRID_KEY);
                 const msg =
@@ -192,8 +242,8 @@ router.post('/passwordResetRequest', async (req, res) => {
                             error: 'Email required'
                         })
                     }
-                }else{
-                    return res.send({ error: 'Please check username and email'})
+                } else {
+                    return res.send({ error: 'Please check username and email' })
                 }
             }
         });
@@ -205,21 +255,30 @@ router.post('/passwordResetRequest', async (req, res) => {
 });
 
 
-router.post('/passwordReset', async (req, res) => {
+router.post('/passwordReset', authCheck, async (req, res) => {
     const password = req.body.hashedPassword;
     const passwordResetToken = req.body.passwordResetToken;
-    
+    const userName = req.body.userName;
+
     try {
         User.find(async (err, users) => {
-            if (passwordResetToken == users[0].passwordResetToken) {
+            const cnt = 0;
+            const found = false;
+            while(!found && cnt < users.length){
+                if(userName == users[cnt].userName && passwordResetToken == users[cnt].passwordResetToken){
+                    found = true;
+                }
+                cnt++;
+            }
+            if (found) {
                 const buffer = crypto.randomBytes(32);
                 const newPasswordResetToken = buffer.toString("hex");
                 const hashedPassword = await bcrypt.hash(password, saltRounds);
-                users[0].hashedPassword = hashedPassword;
-                users[0].passwordResetToken = newPasswordResetToken;
-                users[0].save();
+                users[cnt-1].hashedPassword = hashedPassword;
+                users[cnt-1].passwordResetToken = newPasswordResetToken;
+                users[cnt-1].save();
                 res.send({ message: 'Successfully reset password' });
-            }else{
+            } else {
                 res.send({ message: 'incorrect token' });
             }
         });

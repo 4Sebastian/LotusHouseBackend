@@ -2,8 +2,11 @@ const jwt = require('jsonwebtoken');
 const secret = "" + process.env.JWT_SECRET;
 
 exports.authCheck = async function(req, res, next) {
-    if (req.headers.authorization) {
-        const token = req.headers.authorization.split(' ')[1];
+    const bearerHeader = req.headers['authorization'];
+
+    if (typeof bearerHeader !== 'undefined') {
+        const bearer = bearerHeader.split(' ');
+        const token = bearer[1]; 
         //const token = req.headers.authorization;
         
         await jwt.verify(token, secret, (err, decoded) => {
@@ -14,6 +17,7 @@ exports.authCheck = async function(req, res, next) {
 
             }
             else {
+                req.body.userName = decoded.userID;
                 next();
             }
         });
