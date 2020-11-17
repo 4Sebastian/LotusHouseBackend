@@ -148,36 +148,50 @@ router.post('/register', async (req, res) => {
     //const buffer = await crypto.randomBytes(16);
     //const verifiedToken = buffer.toString("hex");
 
-    const secret = "" + process.env.JWT_SECRET;
-    const token = jwt.sign({ userID: userName },secret, { expiresIn: '30d' });    
-    const verifiedToken = token;
-
-    try {
-        //const passwordResetUrl = `${"" + process.env.FRONTEND_URL}/passwordReset?passwordResetToken=${passwordResetToken}`;
-        sgMail.setApiKey("" + process.env.SENDGRID_KEY);
-        const msg =
-        {
-            to: 'lotushouseapp@gmail.com',
-            from: '' + process.env.FROM_EMAIL,
-            subject: 'Requested Shelter Account Creation',
-            text: `${userName} from ${shelterName}, has requested to create an account in the app. Their email to reference them is ${email}. If everything is good to go, here is the verification they would use within the next 30 days starting TODAY: ${verifiedToken}`,
-            html:  `<p>${userName} from ${shelterName},</p>
-                    <p>
-                    has requested to create an account in the app. Their email to reference them is ${email}.
-                    </p>
-                    <p>
-                    If everything is good to go, here is the verification they would use within the next 30 days starting TODAY:
-                    </p>
-                    <p>
-                        <h1>${verifiedToken}</h1>
-                    </p>`,
-        };
-        sgMail.send(msg);
-        res.send({ msges: 'Successfully sent email' });
-    }
-    catch (ex) {
-    console.log(ex);
-    res.send(ex, 500);
+    if (!userName) {
+        return res.send({
+            error: 'User name required'
+        })
+    }else if(!shelterName){
+        return res.send({
+            error: 'shelter name required'
+        })
+    }else if(!email){
+        return res.send({
+            error: 'email required'
+        })
+    }else{
+        const secret = "" + process.env.JWT_SECRET;
+        const token = jwt.sign({ userID: userName },secret, { expiresIn: '30d' });    
+        const verifiedToken = token;
+    
+        try {
+            //const passwordResetUrl = `${"" + process.env.FRONTEND_URL}/passwordReset?passwordResetToken=${passwordResetToken}`;
+            sgMail.setApiKey("" + process.env.SENDGRID_KEY);
+            const msg =
+            {
+                to: 'lotushouseapp@gmail.com',
+                from: '' + process.env.FROM_EMAIL,
+                subject: 'Requested Shelter Account Creation',
+                text: `${userName} from ${shelterName}, has requested to create an account in the app. Their email to reference them is ${email}. If everything is good to go, here is the verification they would use within the next 30 days starting TODAY: ${verifiedToken}`,
+                html:  `<p>${userName} from ${shelterName},</p>
+                        <p>
+                        has requested to create an account in the app. Their email to reference them is ${email}.
+                        </p>
+                        <p>
+                        If everything is good to go, here is the verification they would use within the next 30 days starting TODAY:
+                        </p>
+                        <p>
+                            <h1>${verifiedToken}</h1>
+                        </p>`,
+            };
+            sgMail.send(msg);
+            res.send({ msges: 'Successfully sent email' });
+        }
+        catch (ex) {
+        console.log(ex);
+        res.send(ex, 500);
+        }
     }
 });
 
