@@ -141,7 +141,7 @@ router.post('/signup', authCheck, async (req, res) => {
     });
 });
 
-router.post('/register', async (req, res) => {
+router.get('/register', async (req, res) => {
     const userName = req.body.name;
     const shelterName = req.body.shelter;
     const email = req.body.email;
@@ -322,7 +322,7 @@ router.post('/passwordReset', async (req, res) => {
     }
 });
 
-router.post('/getAllNames', async (req, res) => {
+router.get('/getAllNames', async (req, res) => {
     User.find((err, users) => {
         const names = "";
         for(const i = 0; i < users.length; i++){
