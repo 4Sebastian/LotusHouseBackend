@@ -111,7 +111,7 @@ router.post('/signup', authCheck, async (req, res) => {
             try {
                 const hashedPassword = await bcrypt.hash(password, saltRounds)
                 const temp = {
-                    "userName": username,
+                    "userName": userName,
                     "hashedPassword": hashedPassword,
                     "email": email,
                     "shelterName": shelterName
