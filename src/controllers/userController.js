@@ -340,7 +340,7 @@ router.post('/passwordReset', async (req, res) => {
 
 router.post('/getAllNames', async (req, res) => {
     User.find((err, users) => {
-        const names = "";
+        var names = "";
         for(const i = 0; i < users.length; i++){
             names += users.shelterName + "||";
         }
