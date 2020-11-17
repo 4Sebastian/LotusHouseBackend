@@ -81,7 +81,7 @@ router.post('/signup', authCheck, async (req, res) => {
     const password = req.body.hashedPassword;
     const shelterName = req.body.shelterName;
 
-    if (!username || !password) {
+    if (!userName || !password) {
         return res.send({
             error: "need username and password"
         })
@@ -162,7 +162,7 @@ router.post('/register', async (req, res) => {
         })
     }else{
         const secret = "" + process.env.JWT_SECRET;
-        const token = jwt.sign({ userID: userName },secret, { expiresIn: '30d' });    
+        const token = jwt.sign({ userID: userName },secret, { expiresIn: '10d' });    
         const verifiedToken = token;
     
         try {
@@ -173,13 +173,13 @@ router.post('/register', async (req, res) => {
                 to: 'lotushouseapp@gmail.com',
                 from: '' + process.env.FROM_EMAIL,
                 subject: 'Requested Shelter Account Creation',
-                text: `${userName} from ${shelterName}, has requested to create an account in the app. Their email to reference them is ${email}. If everything is good to go, here is the verification they would use within the next 30 days starting TODAY: ${verifiedToken}`,
+                text: `${userName} from ${shelterName}, has requested to create an account in the app. Their email to reference them is ${email}. If everything is good to go, here is the verification they would use within the next 10 days starting TODAY: ${verifiedToken}`,
                 html:  `<p>${userName} from ${shelterName},</p>
                         <p>
                         has requested to create an account in the app. Their email to reference them is ${email}.
                         </p>
                         <p>
-                        If everything is good to go, here is the verification they would use within the next 30 days starting TODAY:
+                        If everything is good to go, here is the verification they would use within the next 10 days starting TODAY:
                         </p>
                         <p>
                             <h1>${verifiedToken}</h1>
