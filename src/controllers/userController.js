@@ -75,10 +75,11 @@ router.route('/login').post(async (req, res) => {
     });
 });
 
-router.route('/signup').post(async (req, res) => {
-    const username = req.body.username;
+router.post('/signup', authCheck, async (req, res) => {
+    const userName = req.body.username;
     const email = req.body.email;
     const password = req.body.hashedPassword;
+    const shelterName = req.body.shelterName;
 
     if (!username || !password) {
         return res.send({
@@ -86,39 +87,71 @@ router.route('/signup').post(async (req, res) => {
         })
     }
 
-    try {
-        const hashedPassword = await bcrypt.hash(password, saltRounds)
-        const temp = {
-            "userName": username,
-            "hashedPassword": hashedPassword,
-            "email": email
-        };
-        let user = new User(temp);
-        user.save()
-            .then(user => {
-                res.status(200).send('Added succesfully');
-                console.log("worked");
-            })
-            .catch(err => {
-                res.status(400).send('Failed to create new record');
-                console.log(err);
-            });
+    User.find(async (err, users) => {
+        const cnt = 0;
+        const found = false;
+        const msg = "";
+        while(!found && cnt < users.length){
+            if(userName == users[cnt].userName || email == users[cnt].email || shelterName == users[cnt].shelterName){
+                found = true;
+                if(userName == users[cnt].userName){
+                    msg = "The username is already taken";
+                }else if(email == users[cnt].email){
+                    msg = "The email is already taken";
+                }else{
+                    msg = "The shelter name is already taken";
+                }
+            }
+            cnt++;
+        }        
+        
+        if(!found){
+            try {
+                const hashedPassword = await bcrypt.hash(password, saltRounds)
+                const temp = {
+                    "userName": username,
+                    "hashedPassword": hashedPassword,
+                    "email": email,
+                    "shelterName": shelterName
+                };
+                let user = new User(temp);
+                user.save()
+                    .then(user => {
+                        res.status(200).send('Added succesfully');
+                        console.log("worked");
+                    })
+                    .catch(err => {
+                        res.status(400).send('Failed to create new record');
+                        console.log(err);
+                    });
+        
+        
+            }
+            catch (ex) {
+                logger.error(ex);
+                res.status(400);
+                return res.send({ error: ex });
+            }
+        }else{
+            res.status(400).send(msg);
+            console.log(err);
+        }
 
-
-    }
-    catch (ex) {
-        logger.error(ex);
-        res.status(400);
-        return res.send({ error: ex });
-    }
+        
+    });
 });
 
 router.post('/register', async (req, res) => {
     const userName = req.body.name;
     const shelterName = req.body.shelter;
     const email = req.body.email;
-    const buffer = await crypto.randomBytes(16);
-    const verifiedToken = buffer.toString("hex");
+    //const buffer = await crypto.randomBytes(16);
+    //const verifiedToken = buffer.toString("hex");
+
+    const secret = "" + process.env.JWT_SECRET;
+    const token = jwt.sign({ userID: userName },secret, { expiresIn: '30d' });    
+    const verifiedToken = token;
+
     try {
         //const passwordResetUrl = `${"" + process.env.FRONTEND_URL}/passwordReset?passwordResetToken=${passwordResetToken}`;
         sgMail.setApiKey("" + process.env.SENDGRID_KEY);
@@ -148,46 +181,46 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.put('/updateUser', authCheck, async function (req, res) {
-    User.find((err, users) => {
-        const userName = req.body.userName;
-        const email = req.body.email;
-        if (email == users[0].email) {
-            users[0].username = userName;
-        }
-        users[0].save()
-            .then(user => {
-                res.status(200).send('Updated succesfully');
-                console.log("worked");
-            })
-            .catch(err => {
-                res.status(400).send('Failed to update');
-                console.log("did not work");
-            });
-        return res.send({ message: 'User updated' });
-    });
-});
+// router.put('/updateUser', authCheck, async function (req, res) {
+//     User.find((err, users) => {
+//         const userName = req.body.userName;
+//         const email = req.body.email;
+//         if (email == users[0].email) {
+//             users[0].username = userName;
+//         }
+//         users[0].save()
+//             .then(user => {
+//                 res.status(200).send('Updated succesfully');
+//                 console.log("worked");
+//             })
+//             .catch(err => {
+//                 res.status(400).send('Failed to update');
+//                 console.log("did not work");
+//             });
+//         return res.send({ message: 'User updated' });
+//     });
+// });
 
 
-router.put('/updatePassword', authCheck, async function (req, res) {
-    User.find(async (err, users) => {
-        const password = req.body.password;
-        try {
-            const hashedPassword = await bcrypt.hash(password, saltRounds)
-            users[0].hashedPassword = hashedPassword;
-            users.save().then(user => {
-                res.status(200).json({ 'user': 'Update Done' });
-            });
-            return res.send({ message: 'User created' });
-        }
-        catch (ex) {
-            console.log(ex);
-            res.status(400);
-            return res.send({ error: ex });
-        }
-    });
+// router.put('/updatePassword', authCheck, async function (req, res) {
+//     User.find(async (err, users) => {
+//         const password = req.body.password;
+//         try {
+//             const hashedPassword = await bcrypt.hash(password, saltRounds)
+//             users[0].hashedPassword = hashedPassword;
+//             users.save().then(user => {
+//                 res.status(200).json({ 'user': 'Update Done' });
+//             });
+//             return res.send({ message: 'User created' });
+//         }
+//         catch (ex) {
+//             console.log(ex);
+//             res.status(400);
+//             return res.send({ error: ex });
+//         }
+//     });
 
-});
+// });
 
 
 router.post('/passwordResetRequest', async (req, res) => {
@@ -287,6 +320,16 @@ router.post('/passwordReset', async (req, res) => {
         console.log(ex);
         res.send(ex, 500);
     }
+});
+
+router.post('/getAllNames', async (req, res) => {
+    User.find((err, users) => {
+        const names = "";
+        for(const i = 0; i < users.length; i++){
+            names += users.shelterName + "||";
+        }
+        res.send({ message: names });
+    });
 });
 
 

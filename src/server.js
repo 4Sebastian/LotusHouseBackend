@@ -39,8 +39,8 @@ connection.once('open', () => {
 
 
 //Arrays
-router.route('/events/:formDate').get((req, res) => {
-    Event.find({ formDate: req.params.formDate }, (err, events) => {
+router.route('/events/:shelterName/:formDate').get((req, res) => {
+    Event.find({ formDate: req.params.formDate, shelterName: req.params.shelterName }, (err, events) => {
         if (err)
             console.log(err);
         else
@@ -48,8 +48,8 @@ router.route('/events/:formDate').get((req, res) => {
     });
 });
 
-router.route('/rooms/:formDate').get((req, res) => {
-    Room.find({ formDate: req.params.formDate }, (err, rooms) => {
+router.route('/rooms/:shelterName/:formDate').get((req, res) => {
+    Room.find({ formDate: req.params.formDate, shelterName: req.params.shelterName }, (err, rooms) => {
         if (err)
             console.log(err);
         else
@@ -59,8 +59,8 @@ router.route('/rooms/:formDate').get((req, res) => {
 
 
 //Individual Indexes
-router.route('/events/:formDate/:id').get((req, res) => {
-    Event.find({ formDate: req.params.formDate, _id: req.params.id }, (err, events) => {
+router.route('/events/:shelterName/:formDate/:id').get((req, res) => {
+    Event.find({ formDate: req.params.formDate, _id: req.params.id, shelterName: req.params.shelterName }, (err, events) => {
         if (err)
             console.log(err);
         else
@@ -68,8 +68,8 @@ router.route('/events/:formDate/:id').get((req, res) => {
     });
 });
 
-router.route('/rooms/:formDate/:id').get((req, res) => {
-    Room.find({ formDate: req.params.formDate, _id: req.params.id }, (err, rooms) => {
+router.route('/rooms/:shelterName/:formDate/:id').get((req, res) => {
+    Room.find({ formDate: req.params.formDate, _id: req.params.id, shelterName: req.params.shelterName }, (err, rooms) => {
         if (err)
             console.log(err);
         else
@@ -79,9 +79,10 @@ router.route('/rooms/:formDate/:id').get((req, res) => {
 
 
 //Add to each Array
-router.route('/events/:formDate/add').post((req, res) => {
+router.route('/events/:shelterName/:formDate/add').post((req, res) => {
     let event = new Event(req.body);
     event.formDate = req.params.formDate;
+    event.shelterName = req.params.shelterName;
     event.save()
         .then(event => {
             res.status(200).json({ 'event': 'Added succesfully' });
@@ -91,9 +92,10 @@ router.route('/events/:formDate/add').post((req, res) => {
         });
 });
 
-router.route('/rooms/:formDate/add').post((req, res) => {
+router.route('/rooms/:shelterName/:formDate/add').post((req, res) => {
     let room = new Room(req.body);
     room.formDate = req.params.formDate;
+    room.shelterName = req.params.shelterName;
     room.save()
         .then(room => {
             res.status(200).json({ 'issue': 'Added succesfully' });
@@ -105,8 +107,8 @@ router.route('/rooms/:formDate/add').post((req, res) => {
 
 
 //Update Individual Indexes
-router.route('/events/:formDate/update/:id').post((req, res) => {
-    Event.find({ formDate: req.params.formDate, _id: req.params.id }, (err, events) => {
+router.route('/events/:shelterName/:formDate/update/:id').post((req, res) => {
+    Event.find({ formDate: req.params.formDate, _id: req.params.id, shelterName: req.params.shelterName }, (err, events) => {
         if (!events[0])
             return next(new Error('Could not load document'));
         else {
@@ -114,6 +116,7 @@ router.route('/events/:formDate/update/:id').post((req, res) => {
             events[0].date = req.body.date;
             events[0].description = req.body.description;
             events[0].formDate = req.params.formDate;
+            events[0].shelterName = req.params.shelterName;
 
             events[0].save().then(event => {
                 res.json('Update done');
@@ -125,8 +128,8 @@ router.route('/events/:formDate/update/:id').post((req, res) => {
     });
 });
 
-router.route('/rooms/:formDate/update/:id').post((req, res) => {
-    Room.find({ formDate: req.params.formDate, _id: req.params.id }, (err, rooms) => {
+router.route('/rooms/:shelterName/:formDate/update/:id').post((req, res) => {
+    Room.find({ formDate: req.params.formDate, _id: req.params.id, shelterName: req.params.shelterName }, (err, rooms) => {
         if (!rooms[0])
             return next(new Error('Could not load document'));
         else {
@@ -134,6 +137,7 @@ router.route('/rooms/:formDate/update/:id').post((req, res) => {
             rooms[0].number = req.body.number;
             rooms[0].events = req.body.events;
             rooms[0].formDate = req.params.formDate;
+            rooms[0].shelterName = req.params.shelterName;
 
             rooms[0].save().then(room => {
                 res.json('Update done');
@@ -146,8 +150,8 @@ router.route('/rooms/:formDate/update/:id').post((req, res) => {
 
 
 //Delete Individual Indexes
-router.route('/events/:formDate/delete/:id').get((req, res) => {
-    Event.find({ formDate: req.params.formDate, _id: req.params.id }, (err, events) => {
+router.route('/events/:shelterName/:formDate/delete/:id').get((req, res) => {
+    Event.find({ formDate: req.params.formDate, _id: req.params.id, shelterName: req.params.shelterName }, (err, events) => {
         events[0].deleteOne();
         if (err)
             res.json(err);
@@ -156,8 +160,8 @@ router.route('/events/:formDate/delete/:id').get((req, res) => {
     });
 });
 
-router.route('/rooms/:formDate/delete/:id').get((req, res) => {
-    Room.find({ formDate: req.params.formDate, _id: req.params.id }, (err, rooms) => {
+router.route('/rooms/:shelterName/:formDate/delete/:id').get((req, res) => {
+    Room.find({ formDate: req.params.formDate, _id: req.params.id, shelterName: req.params.shelterName }, (err, rooms) => {
         rooms[0].deleteOne();
         if (err)
             res.json(err);
