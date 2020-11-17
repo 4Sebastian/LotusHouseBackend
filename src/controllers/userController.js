@@ -98,8 +98,10 @@ router.post('/signup', authCheck, async (req, res) => {
                     msg = "The username is already taken";
                 }else if(email == users[cnt].email){
                     msg = "The email is already taken";
-                }else{
+                }else if(shelterName == users[cnt].shelterName){
                     msg = "The shelter name is already taken";
+                }else{
+                    msg = "something is just wrong!";
                 }
             }
             cnt++;
