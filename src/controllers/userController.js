@@ -145,6 +145,7 @@ router.post('/register', async (req, res) => {
     const userName = req.body.name;
     const shelterName = req.body.shelter;
     const email = req.body.email;
+    const phoneNumber = req.body.phoneNumber;
     //const buffer = await crypto.randomBytes(16);
     //const verifiedToken = buffer.toString("hex");
 
@@ -160,6 +161,10 @@ router.post('/register', async (req, res) => {
         return res.send({
             error: 'email required'
         })
+    }else if(!phoneNumber){
+        return res.send({
+            error: 'phone number required'
+        })
     }else{
         const secret = "" + process.env.JWT_SECRET;
         const token = jwt.sign({ userID: userName },secret, { expiresIn: '10d' });    
@@ -173,10 +178,10 @@ router.post('/register', async (req, res) => {
                 to: 'lotushouseapp@gmail.com',
                 from: '' + process.env.FROM_EMAIL,
                 subject: 'Requested Shelter Account Creation',
-                text: `${userName} from ${shelterName}, has requested to create an account in the app. Their email to reference them is ${email}. If everything is good to go, here is the verification they would use within the next 10 days starting TODAY: ${verifiedToken}`,
+                text: `${userName} from ${shelterName}, has requested to create an account in the app. Their email to reference them is ${email}; their phone number to reference them is ${phoneNumber}. If everything is good to go, here is the verification they would use within the next 10 days starting TODAY: ${verifiedToken}`,
                 html:  `<p>${userName} from ${shelterName},</p>
                         <p>
-                        has requested to create an account in the app. Their email to reference them is ${email}.
+                        has requested to create an account in the app. Their email to reference them is ${email}; their phone number to reference them is ${phoneNumber}.
                         </p>
                         <p>
                         If everything is good to go, here is the verification they would use within the next 10 days starting TODAY:
