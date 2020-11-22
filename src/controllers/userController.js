@@ -208,12 +208,18 @@ router.post('/register', async (req, res) => {
 
 router.put('/updateUser', authCheck, async function (req, res) {
     const shelterName = req.body.shelter;
-    User.find({ shelterName: req.params.shelterName }, (err, users) => {
-        const userName = req.body.userName;
-        const email = req.body.email;
-        if (email == users[0].email) {
-            users[0].username = userName;
+    const userName = req.body.userName;
+    User.find((err, users) => {
+        for(var i = 0; i < users.length; i++){
+            if(users[i].userName = userName){
+                return res.send({ message: 'Username Taken'});
+            }
         }
+    });
+
+    User.find({ shelterName: shelterName }, (err, users) => {
+
+        users[0].username = userName;
         users[0].save()
             .then(user => {
                 res.status(200).send('Updated succesfully');
@@ -228,8 +234,18 @@ router.put('/updateUser', authCheck, async function (req, res) {
 
 router.put('/updatePassword', authCheck, async function (req, res) {
     const shelterName = req.body.shelter;
+    const password = req.body.password;
+
+    User.find((err, users) => {
+        for(var i = 0; i < users.length; i++){
+            if(users[i].hashedPassword = password){
+                return res.send({ message: 'Username Taken'});
+            }
+        }
+    });
+
     User.find({ shelterName: shelterName }, async (err, users) => {
-        const password = req.body.password;
+        
         try {
             const hashedPassword = await bcrypt.hash(password, saltRounds)
             users[0].hashedPassword = hashedPassword;
