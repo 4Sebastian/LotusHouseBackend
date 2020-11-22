@@ -136,7 +136,7 @@ router.post('/signup', authCheck, async (req, res) => {
             catch (ex) {
                 console.log(ex);
                 res.status(400);
-                return res.send({ error: ex });
+                return res.send({ error: "An interesting error occurred" });
             }
         }else{
             res.status(400).send(msg);
@@ -201,7 +201,7 @@ router.post('/register', async (req, res) => {
         }
         catch (ex) {
         console.log(ex);
-        res.send(ex, 500);
+        res.send("errorzzz", 500);
         }
     }
 });
@@ -239,7 +239,7 @@ router.post('/updatePassword', authCheck, async function (req, res) {
     User.find((err, users) => {
         for(var i = 0; i < users.length; i++){
             if(users[i].hashedPassword = password){
-                return res.send({ message: 'Username Taken'});
+                return res.send({ message: 'Password Taken'});
             }
         }
     });
@@ -250,9 +250,11 @@ router.post('/updatePassword', authCheck, async function (req, res) {
             const hashedPassword = await bcrypt.hash(password, saltRounds)
             users[0].hashedPassword = hashedPassword;
             users.save().then(user => {
-                res.status(200).json({ 'user': 'Update Done' });
-            });
-            return res.send({ message: 'User created' });
+                res.status(200).send({ message: 'Password Updated' });
+            }).catch(err => {
+                res.status(400).send('Failed to update');
+            });;
+            return res.send({ message: 'Password Updated' });
         }
         catch (ex) {
             res.status(400);
@@ -277,6 +279,7 @@ router.post('/deleteAccount', authCheck, async function (req, res) {
                 condition2: compareRes,
                 condition3: user[0].email == email });
         }else{
+            
             res.status(404);
             return res.send({ 
                 message: 'User not deleted', 

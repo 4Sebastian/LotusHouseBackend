@@ -11,7 +11,10 @@ exports.authCheck = async function(req, res, next) {
         
         await jwt.verify(token, secret, (err, decoded) => {
             if (err) {
-                res.send(401);
+                res.status(401);
+                res.send({
+                    error: 'Incorrect Token'
+                });
                 console.log(token);
                 console.log(err);
 
