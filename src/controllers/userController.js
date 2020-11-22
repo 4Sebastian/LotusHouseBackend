@@ -270,8 +270,10 @@ router.post('/deleteAccount', authCheck, async function (req, res) {
         const compareRes = await bcrypt.compare(hashedPassword, user[0].hashedPassword);
         if(user[0].userName == userName && compareRes && user[0].shelterName == shelterName && user[0].email == email && user[0].hashedPassword == hashedPassword){
             user[0].deleteOne();
+            res.status(200);
             return res.send({ message: 'User deleted' });
         }else{
+            res.status(404);
             return res.send({ message: 'User not deleted' });
         }
     });
