@@ -274,7 +274,7 @@ router.post('/deleteAccount', authCheck, async function (req, res) {
             return res.send({ message: 'User deleted' + ' ' + user[0].userName == userName + ' ' + compareRes + ' ' + user[0].shelterName == shelterName + ' ' + user[0].email == email });
         }else{
             res.status(404);
-            return res.send({ message: 'User not deleted' });
+            return res.send({ message: 'User not deleted' + ' ' + user[0].userName == userName + ' ' + compareRes + ' ' + user[0].shelterName == shelterName + ' ' + user[0].email == email });
         }
     });
 });
