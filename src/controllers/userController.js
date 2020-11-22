@@ -268,13 +268,21 @@ router.post('/deleteAccount', authCheck, async function (req, res) {
     const hashedPassword = req.body.hashedPassword;
     User.find({ shelterName: shelterName }, async (err, user) => {
         const compareRes = await bcrypt.compare(hashedPassword, user[0].hashedPassword);
-        if(user[0].userName == userName && compareRes && user[0].shelterName == shelterName && user[0].email == email){
+        if(user[0].userName == userName && compareRes && user[0].email == email){
             user[0].deleteOne();
             res.status(200);
-            return res.send({ message: 'User deleted' + ' ' + user[0].userName == userName + ' ' + compareRes + ' ' + user[0].shelterName == shelterName + ' ' + user[0].email == email });
+            return res.send({ 
+                message: 'User deleted', 
+                condition1: user[0].userName == userName,  
+                condition2: compareRes,
+                condition3: user[0].email == email });
         }else{
             res.status(404);
-            return res.send({ message: 'User not deleted' + ' ' + user[0].userName == userName + ' ' + compareRes + ' ' + user[0].shelterName == shelterName + ' ' + user[0].email == email });
+            return res.send({ 
+                message: 'User not deleted', 
+                condition1: user[0].userName == userName,  
+                condition2: compareRes,
+                condition3: user[0].email == email });
         }
     });
 });
