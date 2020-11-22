@@ -206,7 +206,7 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.put('/updateUser', authCheck, async function (req, res) {
+router.post('/updateUser', authCheck, async function (req, res) {
     const shelterName = req.body.shelter;
     const userName = req.body.userName;
     User.find((err, users) => {
@@ -232,7 +232,7 @@ router.put('/updateUser', authCheck, async function (req, res) {
 });
 
 
-router.put('/updatePassword', authCheck, async function (req, res) {
+router.post('/updatePassword', authCheck, async function (req, res) {
     const shelterName = req.body.shelter;
     const password = req.body.password;
 
