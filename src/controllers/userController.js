@@ -16,6 +16,7 @@ require('dotenv').config({ path: '../../src/.env' });
 router.post('/login', async (req, res) => {
     const userName = req.body.username;
     const password = req.body.hashedPassword;
+    const shelterName = req.body.shelterName;
 
     if (!userName || !password) {
         if (!userName) {
@@ -29,14 +30,19 @@ router.post('/login', async (req, res) => {
             })
         }
     }
+    if(!shelterName){
+        return res.send({
+            error: 'shelter name required'
+        })
+    }
 
     User.find(async (err, users) => {
 
         var cnt = 0;
         var found = false;
         while(!found && cnt < users.length){
-            const compareRes = await bcrypt.compare(password, users[0].hashedPassword);
-            if(userName == users[cnt].userName && compareRes){
+            const compareRes = await bcrypt.compare(password, users[cnt].hashedPassword);
+            if(userName == users[cnt].userName && compareRes && shelterName == users[cnt].shelterName){
                 found = true;
             }
             cnt++;
@@ -200,46 +206,60 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// router.put('/updateUser', authCheck, async function (req, res) {
-//     User.find((err, users) => {
-//         const userName = req.body.userName;
-//         const email = req.body.email;
-//         if (email == users[0].email) {
-//             users[0].username = userName;
-//         }
-//         users[0].save()
-//             .then(user => {
-//                 res.status(200).send('Updated succesfully');
-//                 console.log("worked");
-//             })
-//             .catch(err => {
-//                 res.status(400).send('Failed to update');
-//                 console.log("did not work");
-//             });
-//         return res.send({ message: 'User updated' });
-//     });
-// });
+router.put('/updateUser', authCheck, async function (req, res) {
+    const shelterName = req.body.shelter;
+    User.find({ shelterName: req.params.shelterName }, (err, users) => {
+        const userName = req.body.userName;
+        const email = req.body.email;
+        if (email == users[0].email) {
+            users[0].username = userName;
+        }
+        users[0].save()
+            .then(user => {
+                res.status(200).send('Updated succesfully');
+            })
+            .catch(err => {
+                res.status(400).send('Failed to update');
+            });
+        return res.send({ message: 'User updated' });
+    });
+});
 
 
-// router.put('/updatePassword', authCheck, async function (req, res) {
-//     User.find(async (err, users) => {
-//         const password = req.body.password;
-//         try {
-//             const hashedPassword = await bcrypt.hash(password, saltRounds)
-//             users[0].hashedPassword = hashedPassword;
-//             users.save().then(user => {
-//                 res.status(200).json({ 'user': 'Update Done' });
-//             });
-//             return res.send({ message: 'User created' });
-//         }
-//         catch (ex) {
-//             console.log(ex);
-//             res.status(400);
-//             return res.send({ error: ex });
-//         }
-//     });
+router.put('/updatePassword', authCheck, async function (req, res) {
+    const shelterName = req.body.shelter;
+    User.find({ shelterName: shelterName }, async (err, users) => {
+        const password = req.body.password;
+        try {
+            const hashedPassword = await bcrypt.hash(password, saltRounds)
+            users[0].hashedPassword = hashedPassword;
+            users.save().then(user => {
+                res.status(200).json({ 'user': 'Update Done' });
+            });
+            return res.send({ message: 'User created' });
+        }
+        catch (ex) {
+            res.status(400);
+            return res.send({ error: ex });
+        }
+    });
+});
 
-// });
+router.post('/deleteAccount', authCheck, async function (req, res) {
+    const userName = req.body.name;
+    const shelterName = req.body.shelter;
+    const email = req.body.email;
+    const hashedPassword = req.body.hashedPassword;
+    User.find({ shelterName: shelterName }, async (err, user) => {
+        const compareRes = await bcrypt.compare(password, users[0].hashedPassword);
+        if(user[0].userName == userName && compareRes && user[0].shelterName == shelterName && user[0].email == email && user[0].hashedPassword == hashedPassword){
+            user[0].deleteOne();
+            return res.send({ message: 'User deleted' });
+        }else{
+            return res.send({ message: 'User not deleted' });
+        }
+    });
+});
 
 
 router.post('/passwordResetRequest', async (req, res) => {

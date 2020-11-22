@@ -24,5 +24,6 @@ exports.authCheck = async function(req, res, next) {
     }
     else {
         res.send(401);
+        res.send({ message: 'Incorrect Token' });
     }
 }
