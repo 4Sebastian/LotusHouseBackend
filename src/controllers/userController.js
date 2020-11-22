@@ -267,7 +267,7 @@ router.post('/deleteAccount', authCheck, async function (req, res) {
     const email = req.body.email;
     const hashedPassword = req.body.hashedPassword;
     User.find({ shelterName: shelterName }, async (err, user) => {
-        const compareRes = await bcrypt.compare(hashedPassword, users[0].hashedPassword);
+        const compareRes = await bcrypt.compare(hashedPassword, user[0].hashedPassword);
         if(user[0].userName == userName && compareRes && user[0].shelterName == shelterName && user[0].email == email && user[0].hashedPassword == hashedPassword){
             user[0].deleteOne();
             return res.send({ message: 'User deleted' });
