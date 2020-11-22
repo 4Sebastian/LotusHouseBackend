@@ -295,6 +295,7 @@ router.post('/passwordResetRequest', async (req, res) => {
     const userName = req.body.username
     const email = req.body.email;
     const buffer = await crypto.randomBytes(32);
+    const shelterName = req.body.shelterName;
     const passwordResetToken = buffer.toString("hex");
     try {
         User.find((err, users) => {
@@ -302,7 +303,7 @@ router.post('/passwordResetRequest', async (req, res) => {
             var found = false;
             
             while(!found && cnt < users.length){
-                if(userName == users[cnt].userName && email == users[cnt].email){
+                if(userName == users[cnt].userName && email == users[cnt].email && shelterName == users[cnt].shelterName){
                     found = true;
                 }
                 cnt++;
@@ -361,6 +362,7 @@ router.post('/passwordReset', async (req, res) => {
     const password = req.body.hashedPassword;
     const passwordResetToken = req.body.passwordResetToken;
     const userName = req.body.userName;
+    const shelterName = req.body.shelterName;
 
     try {
         User.find(async (err, users) => {
@@ -368,7 +370,7 @@ router.post('/passwordReset', async (req, res) => {
             var found = false;
 
             while(!found && cnt < users.length){
-                if(userName == users[cnt].userName && passwordResetToken == users[cnt].passwordResetToken){
+                if(userName == users[cnt].userName && passwordResetToken == users[cnt].passwordResetToken && shelterName == users[cnt].shelterName){
                     found = true;
                 }
                 cnt++;
