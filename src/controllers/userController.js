@@ -98,7 +98,7 @@ router.post('/signup', authCheck, async (req, res) => {
         var found = false;
         var msg = "";
         while(!found && cnt < users.length){
-            const compareRes = await bcrypt.compare(password, user[cnt].hashedPassword);
+            const compareRes = await bcrypt.compare(password, users[cnt].hashedPassword);
             if(userName == users[cnt].userName || email == users[cnt].email || shelterName == users[cnt].shelterName || compareRes){
                 found = true;
                 if(userName == users[cnt].userName){
@@ -241,7 +241,7 @@ router.post('/updatePassword', authCheck, async function (req, res) {
 
     User.find(async (err, users) => {
         for(var i = 0; i < users.length; i++){
-            const compareRes = await bcrypt.compare(password, user[i].hashedPassword);
+            const compareRes = await bcrypt.compare(password, users[i].hashedPassword);
             if(users[i].hashedPassword == compareRes){
                 return res.send({ message: 'Password Taken'});
             }
