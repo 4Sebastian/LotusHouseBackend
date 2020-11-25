@@ -98,7 +98,8 @@ router.post('/signup', authCheck, async (req, res) => {
         var found = false;
         var msg = "";
         while(!found && cnt < users.length){
-            if(userName == users[cnt].userName || email == users[cnt].email || shelterName == users[cnt].shelterName){
+            const compareRes = await bcrypt.compare(password, user[cnt].hashedPassword);
+            if(userName == users[cnt].userName || email == users[cnt].email || shelterName == users[cnt].shelterName || compareRes){
                 found = true;
                 if(userName == users[cnt].userName){
                     msg = "The username is already taken";
@@ -106,6 +107,8 @@ router.post('/signup', authCheck, async (req, res) => {
                     msg = "The email is already taken";
                 }else if(shelterName == users[cnt].shelterName){
                     msg = "The shelter name is already taken";
+                }else if(compareRes){
+                    msg = "The password is already taken";
                 }else{
                     msg = "something is just wrong!";
                 }
@@ -236,9 +239,10 @@ router.post('/updatePassword', authCheck, async function (req, res) {
     const shelterName = req.body.shelter;
     const password = req.body.password;
 
-    User.find((err, users) => {
+    User.find(async (err, users) => {
         for(var i = 0; i < users.length; i++){
-            if(users[i].hashedPassword = password){
+            const compareRes = await bcrypt.compare(password, user[i].hashedPassword);
+            if(users[i].hashedPassword == compareRes){
                 return res.send({ message: 'Password Taken'});
             }
         }
