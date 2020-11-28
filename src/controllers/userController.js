@@ -365,7 +365,6 @@ router.post('/passwordResetRequest', async (req, res) => {
 router.post('/passwordReset', async (req, res) => {
     const password = req.body.hashedPassword;
     const passwordResetToken = req.body.passwordResetToken;
-    const userName = req.body.userName;
     const shelterName = req.body.shelterName;
 
     try {
@@ -374,7 +373,7 @@ router.post('/passwordReset', async (req, res) => {
             var found = false;
 
             while(!found && cnt < users.length){
-                if(userName == users[cnt].userName && passwordResetToken == users[cnt].passwordResetToken && shelterName == users[cnt].shelterName){
+                if(passwordResetToken == users[cnt].passwordResetToken && shelterName == users[cnt].shelterName){
                     found = true;
                 }
                 cnt++;
