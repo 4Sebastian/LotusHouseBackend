@@ -231,7 +231,7 @@ router.post('/updateUser', authCheck, async function (req, res) {
             try {
                 users[0].userName = userName;
                 users[0].save();
-                console.log(shelterName + ": uhuh:" + users[0].username);
+                console.log(shelterName + ": uhuh:" + users[0].userName);
                 return res.status(200).send('Updated succesfully');
             }
             catch (ex) {
@@ -251,6 +251,7 @@ function foundUsername(userName) {
     User.find((err, users) => {
         var cnt = 0;
         while (cnt < users.length) {
+            console.log("current: " + users[cnt].userName + ": and checking: " + userName);
             if (users[cnt++].userName == userName) {
                 return true;
             }
