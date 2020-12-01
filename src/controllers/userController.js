@@ -226,17 +226,19 @@ router.post('/updateUser', authCheck, async function (req, res) {
     // });
 
     var cnt = 0;
-        while (cnt < users.length) {
-            console.log("current: " + users[cnt].userName + ": and checking: " + userName);
-            if (userName == users[cnt].userName) {
-                found = true;
-            }
-            cnt++;
-        }
+        
 
-    if (!found) {
+    // if (!found) {
         User.find({ shelterName: shelterName }, (err, users) => {
-
+            
+            while (cnt < users.length) {
+                console.log("current: " + users[cnt].userName + ": and checking: " + userName);
+                if (userName == users[cnt].userName) {
+                    found = true;
+                }
+                cnt++;
+            }
+            if(!found){
             try {
                 users[0].userName = userName;
                 users[0].save();
@@ -248,11 +250,12 @@ router.post('/updateUser', authCheck, async function (req, res) {
                 console.log(ex);
                 return res.send({ error: ex });
             }
+        }
 
         });
-    } else {
-        return res.status(400).send({ message: 'Username Taken' });
-    }
+    // } else {
+    //     return res.status(400).send({ message: 'Username Taken' });
+    // }
 
 });
 
