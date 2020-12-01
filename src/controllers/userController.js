@@ -212,59 +212,71 @@ router.post('/register', async (req, res) => {
 router.post('/updateUser', authCheck, async function (req, res) {
     const shelterName = req.body.shelter;
     const userName = req.body.userName;
+    var found = false;
+    
     User.find((err, users) => {
         for(var i = 0; i < users.length; i++){
             if(users[i].userName = userName){
+                found = true;
                 return res.send({ message: 'Username Taken'});
             }
         }
     });
 
-    User.find({ shelterName: shelterName }, (err, users) => {
+    if(!found){
+        User.find({ shelterName: shelterName }, (err, users) => {
 
-        users[0].username = userName;
-        users[0].save()
-            .then(user => {
-                res.status(200).send('Updated succesfully');
-            })
-            .catch(err => {
-                res.status(400).send('Failed to update');
-            });
-        return res.send({ message: 'User updated' });
-    });
+            users[0].username = userName;
+            users[0].save()
+                .then(user => {
+                    res.status(200).send('Updated succesfully');
+                })
+                .catch(err => {
+                    res.status(400).send('Failed to update');
+                });
+            return res.send({ message: 'User updated' });
+        });
+    }
+
 });
 
 
 router.post('/updatePassword', authCheck, async function (req, res) {
     const shelterName = req.body.shelter;
     const password = req.body.password;
+    var found = false;
 
     User.find(async (err, users) => {
         for(var i = 0; i < users.length; i++){
             const compareRes = await bcrypt.compare(password, users[i].hashedPassword);
             if(users[i].hashedPassword == compareRes){
+                found = true;
                 return res.send({ message: 'Password Taken'});
             }
         }
     });
 
-    User.find({ shelterName: shelterName }, async (err, users) => {
+    if(!found){
+        User.find({ shelterName: shelterName }, async (err, users) => {
         
-        try {
-            const hashedPassword = await bcrypt.hash(password, saltRounds)
-            users[0].hashedPassword = hashedPassword;
-            users.save().then(user => {
-                res.status(200).send({ message: 'Password Updated' });
-            }).catch(err => {
-                res.status(400).send('Failed to update');
-            });;
-            return res.send({ message: 'Password Updated' });
-        }
-        catch (ex) {
-            res.status(400);
-            return res.send({ error: ex });
-        }
-    });
+            try {
+                const hashedPassword = await bcrypt.hash(password, saltRounds)
+                users[0].hashedPassword = hashedPassword;
+                users.save().then(user => {
+                    res.status(200).send({ message: 'Password Updated' });
+                }).catch(err => {
+                    res.status(400).send('Failed to update');
+                });;
+                return res.send({ message: 'Password Updated' });
+            }
+            catch (ex) {
+                res.status(400);
+                return res.send({ error: ex });
+            }
+        });
+    }
+
+    
 });
 
 router.post('/deleteAccount', authCheck, async function (req, res) {
