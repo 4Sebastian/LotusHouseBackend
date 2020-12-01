@@ -252,9 +252,10 @@ function foundUsername(userName) {
         var cnt = 0;
         while (cnt < users.length) {
             console.log("current: " + users[cnt].userName + ": and checking: " + userName);
-            if (users[cnt++].userName == userName) {
+            if (userName == users[cnt].userName) {
                 return true;
             }
+            cnt++;
         }
         // for (var i = 0; i < users.length; i++) {
         //     if (users[i].userName == userName) {
