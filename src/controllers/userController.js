@@ -280,6 +280,7 @@ router.post('/updatePassword', authCheck, async function (req, res) {
     const shelterName = req.body.shelter;
     const password = req.body.password;
     var found = false;
+    var cnt = 0;
 
     // User.find(async (err, users) => {
     //     for(var i = 0; i < users.length; i++){
@@ -294,8 +295,8 @@ router.post('/updatePassword', authCheck, async function (req, res) {
     // if (!foundPassword(password)) {
     User.find({ shelterName: shelterName }, async (err, users) => {
         while (cnt < users.length) {
-            console.log("current: " + users[cnt].userName + ": and checking: " + userName);
-            if (userName == users[cnt].userName) {
+            const compareRes = await bcrypt.compare(password, users[i].hashedPassword);
+            if (users[i].hashedPassword == compareRes) {
                 found = true;
             }
             cnt++;
