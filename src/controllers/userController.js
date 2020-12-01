@@ -300,7 +300,7 @@ router.post('/updatePassword', authCheck, async function (req, res) {
     User.find( async (err, users) => {
         while (cnt < users.length) {
             const compareRes = await bcrypt.compare(password, users[cnt].hashedPassword);
-            if (users[cnt].hashedPassword == compareRes) {
+            if (compareRes) {
                 found = true;
             }
             cnt++;
