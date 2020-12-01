@@ -229,13 +229,9 @@ router.post('/updateUser', authCheck, async function (req, res) {
         User.find({ shelterName: shelterName }, (err, users) => {
 
             users[0].username = userName;
-            users[0].save()
-                .then(user => {
-                    return res.status(200).send('Updated succesfully');
-                })
-                .catch(err => {
-                    return res.status(400).send('Failed to update');
-                });
+            users[0].save();
+            return res.status(200).send('Updated succesfully');
+                
         });
     }
 
@@ -275,11 +271,9 @@ router.post('/updatePassword', authCheck, async function (req, res) {
             try {
                 const hashedPassword = await bcrypt.hash(password, saltRounds)
                 users[0].hashedPassword = hashedPassword;
-                users.save().then(user => {
-                    return res.status(200).send({ message: 'Password Updated' });
-                }).catch(err => {
-                    return res.status(400).send('Failed to update');
-                });
+                users.save();
+                return res.status(200).send({ message: 'Password Updated' });
+               
             }
             catch (ex) {
                 res.status(400);
