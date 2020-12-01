@@ -229,8 +229,9 @@ router.post('/updateUser', authCheck, async function (req, res) {
         User.find({ shelterName: shelterName }, (err, users) => {
 
             try {
-                users[0].username = userName;
+                users[0].userName = userName;
                 users[0].save();
+                console.log(shelterName + ": uhuh:" + users[0].username);
                 return res.status(200).send('Updated succesfully');
             }
             catch (ex) {
@@ -248,11 +249,17 @@ router.post('/updateUser', authCheck, async function (req, res) {
 
 function foundUsername(userName) {
     User.find((err, users) => {
-        for (var i = 0; i < users.length; i++) {
-            if (users[i].userName == userName) {
+        var cnt = 0;
+        while (!found && cnt < users.length) {
+            if (users[cnt++].userName == userName) {
                 return true;
             }
         }
+        // for (var i = 0; i < users.length; i++) {
+        //     if (users[i].userName == userName) {
+        //         return true;
+        //     }
+        // }
         return false;
     });
 
@@ -281,7 +288,7 @@ router.post('/updatePassword', authCheck, async function (req, res) {
             try {
                 const hashedPassword = await bcrypt.hash(password, saltRounds)
                 users[0].hashedPassword = hashedPassword;
-                users.save();
+                users[0].save();
                 return res.status(200).send({ message: 'Password Updated' });
 
             }
@@ -300,13 +307,22 @@ router.post('/updatePassword', authCheck, async function (req, res) {
 
 function foundPassword(password) {
     User.find(async (err, users) => {
-        for (var i = 0; i < users.length; i++) {
-            const compareRes = await bcrypt.compare(password, users[i].hashedPassword);
-            if (users[i].hashedPassword == compareRes) {
+        var cnt = 0;
+        while (!found && cnt < users.length) {
+            const compareRes = await bcrypt.compare(password, users[cnt].hashedPassword);
+            if (users[cnt++].hashedPassword == compareRes) {
                 found = true;
                 return true;
             }
         }
+        // }
+        // for (var i = 0; i < users.length; i++) {
+        //     const compareRes = await bcrypt.compare(password, users[i].hashedPassword);
+        //     if (users[i].hashedPassword == compareRes) {
+        //         found = true;
+        //         return true;
+        //     }
+        // }
 
         return false;
     });
