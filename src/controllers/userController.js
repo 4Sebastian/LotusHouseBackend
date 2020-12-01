@@ -236,7 +236,6 @@ router.post('/updateUser', authCheck, async function (req, res) {
                 .catch(err => {
                     return res.status(400).send('Failed to update');
                 });
-            return res.send({ message: 'User updated' });
         });
     }
 
@@ -268,8 +267,7 @@ router.post('/updatePassword', authCheck, async function (req, res) {
                     return res.status(200).send({ message: 'Password Updated' });
                 }).catch(err => {
                     return res.status(400).send('Failed to update');
-                });;
-                return res.send({ message: 'Password Updated' });
+                });
             }
             catch (ex) {
                 res.status(400);
