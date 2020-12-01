@@ -218,7 +218,7 @@ router.post('/updateUser', authCheck, async function (req, res) {
     
     User.find((err, users) => {
         for(var i = 0; i < users.length; i++){
-            if(users[i].userName = userName){
+            if(users[i].userName == userName){
                 found = true;
                 return res.status(400).send({ message: 'Username Taken'});
             }
@@ -240,12 +240,12 @@ router.post('/updateUser', authCheck, async function (req, res) {
 function foundUsername(userName){
     User.find((err, users) => {
         for(var i = 0; i < users.length; i++){
-            if(users[i].userName = userName){
-                return false;
+            if(users[i].userName == userName){
+                return true;
             }
         }
     });
-    return true;
+    return false;
 
 }
 
@@ -291,11 +291,11 @@ function foundPassword(password){
             const compareRes = await bcrypt.compare(password, users[i].hashedPassword);
             if(users[i].hashedPassword == compareRes){
                 found = true;
-                return false;
+                return true;
             }
         }
     });
-    return true;
+    return false;
 }
 
 
