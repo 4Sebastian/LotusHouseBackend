@@ -241,11 +241,11 @@ function foundUsername(userName){
     User.find((err, users) => {
         for(var i = 0; i < users.length; i++){
             if(users[i].userName = userName){
-                return true;
+                return false;
             }
         }
     });
-    return false;
+    return true;
 
 }
 
@@ -291,11 +291,11 @@ function foundPassword(password){
             const compareRes = await bcrypt.compare(password, users[i].hashedPassword);
             if(users[i].hashedPassword == compareRes){
                 found = true;
-                return true;
+                return false;
             }
         }
     });
-    return false;
+    return true;
 }
 
 
