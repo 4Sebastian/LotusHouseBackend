@@ -240,7 +240,7 @@ router.post('/updateUser', authCheck, async function (req, res) {
                 cnt++;
             }
         
-        users.find({ shelterName: shelterName }, (err2, users2) => {
+        User.find({ shelterName: shelterName }, (err2, users2) => {
         if (!found) {
             try {
                 users2[0].userName = userName;
