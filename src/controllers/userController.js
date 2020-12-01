@@ -128,22 +128,24 @@ router.post('/signup', authCheck, async (req, res) => {
                 let user = new User(temp);
                 user.save()
                     .then(user => {
-                        res.status(200).send('Added succesfully');
                         console.log("worked");
+                        return res.status(200).send('Added succesfully');
+                        
                     })
                     .catch(err => {
-                        res.status(400).send('Failed to create new record');
                         console.log(err);
+                        return res.status(400).send('Failed to create new record');
+                        
                     });
             }
             catch (ex) {
                 console.log(ex);
-                res.status(400);
-                return res.send({ error: "An interesting error occurred" });
+                return res.status(400).send({ error: "An interesting error occurred" });
             }
         }else{
-            res.status(400).send(msg);
             console.log(err);
+            return res.status(400).send(msg);
+            
         }
 
         
@@ -200,11 +202,11 @@ router.post('/register', async (req, res) => {
                         </p>`,
             };
             sgMail.send(msg);
-            res.send({ msges: 'Successfully sent email' });
+            return res.send({ msges: 'Successfully sent email' });
         }
         catch (ex) {
         console.log(ex);
-        res.send("errorzzz", 500);
+        return res.send("errorzzz", 500);
         }
     }
 });
@@ -229,10 +231,10 @@ router.post('/updateUser', authCheck, async function (req, res) {
             users[0].username = userName;
             users[0].save()
                 .then(user => {
-                    res.status(200).send('Updated succesfully');
+                    return res.status(200).send('Updated succesfully');
                 })
                 .catch(err => {
-                    res.status(400).send('Failed to update');
+                    return res.status(400).send('Failed to update');
                 });
             return res.send({ message: 'User updated' });
         });
@@ -263,9 +265,9 @@ router.post('/updatePassword', authCheck, async function (req, res) {
                 const hashedPassword = await bcrypt.hash(password, saltRounds)
                 users[0].hashedPassword = hashedPassword;
                 users.save().then(user => {
-                    res.status(200).send({ message: 'Password Updated' });
+                    return res.status(200).send({ message: 'Password Updated' });
                 }).catch(err => {
-                    res.status(400).send('Failed to update');
+                    return res.status(400).send('Failed to update');
                 });;
                 return res.send({ message: 'Password Updated' });
             }
@@ -348,7 +350,7 @@ router.post('/passwordResetRequest', async (req, res) => {
                 `,
                 };
                 sgMail.send(msg);
-                res.send({ msges: 'Successfully sent email' });
+                return res.send({ msges: 'Successfully sent email' });
             } else {
                 if (!userName || !email) {
                     if (!userName) {
@@ -369,7 +371,7 @@ router.post('/passwordResetRequest', async (req, res) => {
     }
     catch (ex) {
         console.log(ex);
-        res.send(ex, 500);
+        return res.send(ex, 500);
     }
 });
 
@@ -397,15 +399,15 @@ router.post('/passwordReset', async (req, res) => {
                 users[cnt-1].hashedPassword = hashedPassword;
                 users[cnt-1].passwordResetToken = newPasswordResetToken;
                 users[cnt-1].save();
-                res.send({ message: 'Successfully reset password' });
+                return res.send({ message: 'Successfully reset password' });
             } else {
-                res.send({ message: 'incorrect token' });
+                return res.send({ message: 'incorrect token' });
             }
         });
     }
     catch (ex) {
         console.log(ex);
-        res.send(ex, 500);
+        return res.send(ex, 500);
     }
 });
 
@@ -415,7 +417,7 @@ router.post('/getAllNames', async (req, res) => {
         for(var i = 0; i < users.length; i++){
             names += users[i].shelterName + "||";
         }
-        res.send({ message: names });
+        return res.send({ message: names });
     });
 });
 
