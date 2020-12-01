@@ -250,7 +250,7 @@ router.post('/updateUser', authCheck, async function (req, res) {
 function foundUsername(userName) {
     User.find((err, users) => {
         var cnt = 0;
-        while (!found && cnt < users.length) {
+        while (cnt < users.length) {
             if (users[cnt++].userName == userName) {
                 return true;
             }
@@ -308,7 +308,7 @@ router.post('/updatePassword', authCheck, async function (req, res) {
 function foundPassword(password) {
     User.find(async (err, users) => {
         var cnt = 0;
-        while (!found && cnt < users.length) {
+        while (cnt < users.length) {
             const compareRes = await bcrypt.compare(password, users[cnt].hashedPassword);
             if (users[cnt++].hashedPassword == compareRes) {
                 found = true;
