@@ -225,7 +225,7 @@ router.post('/updateUser', authCheck, async function (req, res) {
         }
     });
 
-    if(!found){
+    if(!foundUsername(userName)){
         User.find({ shelterName: shelterName }, (err, users) => {
 
             users[0].username = userName;
@@ -240,6 +240,18 @@ router.post('/updateUser', authCheck, async function (req, res) {
     }
 
 });
+
+function foundUsername(userName){
+    User.find((err, users) => {
+        for(var i = 0; i < users.length; i++){
+            if(users[i].userName = userName){
+                return true;
+            }
+        }
+    });
+    return false;
+
+}
 
 
 router.post('/updatePassword', authCheck, async function (req, res) {
@@ -257,7 +269,7 @@ router.post('/updatePassword', authCheck, async function (req, res) {
         }
     });
 
-    if(!found){
+    if(!foundPassword(password)){
         User.find({ shelterName: shelterName }, async (err, users) => {
         
             try {
@@ -278,6 +290,21 @@ router.post('/updatePassword', authCheck, async function (req, res) {
 
     
 });
+
+function foundPassword(password){
+    User.find(async (err, users) => {
+        for(var i = 0; i < users.length; i++){
+            const compareRes = await bcrypt.compare(password, users[i].hashedPassword);
+            if(users[i].hashedPassword == compareRes){
+                found = true;
+                return true;
+            }
+        }
+    });
+    return false;
+}
+
+
 
 router.post('/deleteAccount', authCheck, async function (req, res) {
     const userName = req.body.name;
