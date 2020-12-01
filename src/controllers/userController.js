@@ -214,7 +214,7 @@ router.post('/register', async (req, res) => {
 router.post('/updateUser', authCheck, async function (req, res) {
     const shelterName = req.body.shelter;
     const userName = req.body.userName;
-    // var found = false;
+    var found = false;
 
     // User.find((err, users) => {
     //     for(var i = 0; i < users.length; i++){
@@ -225,7 +225,16 @@ router.post('/updateUser', authCheck, async function (req, res) {
     //     }
     // });
 
-    if (!foundUsername(userName)) {
+    var cnt = 0;
+        while (cnt < users.length) {
+            console.log("current: " + users[cnt].userName + ": and checking: " + userName);
+            if (userName == users[cnt].userName) {
+                found = true;
+            }
+            cnt++;
+        }
+
+    if (!found) {
         User.find({ shelterName: shelterName }, (err, users) => {
 
             try {
@@ -247,26 +256,19 @@ router.post('/updateUser', authCheck, async function (req, res) {
 
 });
 
-function foundUsername(userName) {
-    User.find((err, users) => {
-        var cnt = 0;
-        while (cnt < users.length) {
-            console.log("current: " + users[cnt].userName + ": and checking: " + userName);
-            if (userName == users[cnt].userName) {
-                return true;
-            }
-            cnt++;
-        }
-        // for (var i = 0; i < users.length; i++) {
-        //     if (users[i].userName == userName) {
-        //         return true;
-        //     }
-        // }
-        return false;
-    });
+// function foundUsername(userName) {
+//     User.find((err, users) => {
+        
+//         // for (var i = 0; i < users.length; i++) {
+//         //     if (users[i].userName == userName) {
+//         //         return true;
+//         //     }
+//         // }
+//         return false;
+//     });
 
 
-}
+// }
 
 
 router.post('/updatePassword', authCheck, async function (req, res) {
