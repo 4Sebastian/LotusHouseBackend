@@ -229,20 +229,23 @@ router.post('/updateUser', authCheck, async function (req, res) {
 
 
     // if (!found) {
-    User.find({ shelterName: shelterName }, (err, users) => {
+    User.find( (err, users) => {
 
-        while (cnt < users.length) {
-            console.log("current: " + users[cnt].userName + ": and checking: " + userName);
-            if (userName == users[cnt].userName) {
-                found = true;
+        
+            while (cnt < users.length) {
+                console.log("current: " + users[cnt].userName + ": and checking: " + userName);
+                if (userName == users[cnt].userName) {
+                    found = true;
+                }
+                cnt++;
             }
-            cnt++;
-        }
+        
+        users.find({ shelterName: shelterName }, (err2, users2) => {
         if (!found) {
             try {
-                users[0].userName = userName;
-                users[0].save();
-                console.log(shelterName + ": uhuh:" + users[0].userName);
+                users2[0].userName = userName;
+                users2[0].save();
+                console.log(shelterName + ": uhuh:" + users2[0].userName);
                 return res.status(200).send('Updated succesfully');
             }
             catch (ex) {
@@ -253,6 +256,7 @@ router.post('/updateUser', authCheck, async function (req, res) {
         } else {
             return res.status(400).send({ message: 'Username Taken' });
         }
+    });
 
     });
     // } else {
@@ -293,7 +297,7 @@ router.post('/updatePassword', authCheck, async function (req, res) {
     // });
 
     // if (!foundPassword(password)) {
-    User.find({ shelterName: shelterName }, async (err, users) => {
+    User.find( async (err, users) => {
         while (cnt < users.length) {
             const compareRes = await bcrypt.compare(password, users[cnt].hashedPassword);
             if (users[cnt].hashedPassword == compareRes) {
@@ -301,11 +305,12 @@ router.post('/updatePassword', authCheck, async function (req, res) {
             }
             cnt++;
         }
+        User.find({ shelterName: shelterName }, async (err2, users2) => {
         if (!found) {
             try {
                 const hashedPassword = await bcrypt.hash(password, saltRounds)
-                users[0].hashedPassword = hashedPassword;
-                users[0].save();
+                users2[0].hashedPassword = hashedPassword;
+                users2[0].save();
                 return res.status(200).send({ message: 'Password Updated' });
 
             }
@@ -317,6 +322,7 @@ router.post('/updatePassword', authCheck, async function (req, res) {
         } else {
             return res.status(400).send({ message: 'Password Taken' });
         }
+    });
     });
     // } else {
     //     return res.status(400).send({ message: 'Password Taken' });
