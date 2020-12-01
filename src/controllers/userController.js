@@ -246,8 +246,9 @@ function foundUsername(userName){
                 return true;
             }
         }
+        return false;
     });
-    return false;
+    
 
 }
 
@@ -298,8 +299,9 @@ function foundPassword(password){
                 return true;
             }
         }
-    });
+        
     return false;
+    });
 }
 
 
