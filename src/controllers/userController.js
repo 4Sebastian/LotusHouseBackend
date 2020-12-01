@@ -220,7 +220,7 @@ router.post('/updateUser', authCheck, async function (req, res) {
         for(var i = 0; i < users.length; i++){
             if(users[i].userName = userName){
                 found = true;
-                return res.send({ message: 'Username Taken'});
+                return res.status(400).send({ message: 'Username Taken'});
             }
         }
     });
@@ -252,7 +252,7 @@ router.post('/updatePassword', authCheck, async function (req, res) {
             const compareRes = await bcrypt.compare(password, users[i].hashedPassword);
             if(users[i].hashedPassword == compareRes){
                 found = true;
-                return res.send({ message: 'Password Taken'});
+                return res.status(400).send({ message: 'Password Taken'});
             }
         }
     });
