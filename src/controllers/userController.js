@@ -226,19 +226,19 @@ router.post('/updateUser', authCheck, async function (req, res) {
     // });
 
     var cnt = 0;
-        
+
 
     // if (!found) {
-        User.find({ shelterName: shelterName }, (err, users) => {
-            
-            while (cnt < users.length) {
-                console.log("current: " + users[cnt].userName + ": and checking: " + userName);
-                if (userName == users[cnt].userName) {
-                    found = true;
-                }
-                cnt++;
+    User.find({ shelterName: shelterName }, (err, users) => {
+
+        while (cnt < users.length) {
+            console.log("current: " + users[cnt].userName + ": and checking: " + userName);
+            if (userName == users[cnt].userName) {
+                found = true;
             }
-            if(!found){
+            cnt++;
+        }
+        if (!found) {
             try {
                 users[0].userName = userName;
                 users[0].save();
@@ -250,9 +250,11 @@ router.post('/updateUser', authCheck, async function (req, res) {
                 console.log(ex);
                 return res.send({ error: ex });
             }
+        } else {
+            return res.status(400).send({ message: 'Username Taken' });
         }
 
-        });
+    });
     // } else {
     //     return res.status(400).send({ message: 'Username Taken' });
     // }
@@ -261,7 +263,7 @@ router.post('/updateUser', authCheck, async function (req, res) {
 
 // function foundUsername(userName) {
 //     User.find((err, users) => {
-        
+
 //         // for (var i = 0; i < users.length; i++) {
 //         //     if (users[i].userName == userName) {
 //         //         return true;
@@ -277,7 +279,7 @@ router.post('/updateUser', authCheck, async function (req, res) {
 router.post('/updatePassword', authCheck, async function (req, res) {
     const shelterName = req.body.shelter;
     const password = req.body.password;
-    // var found = false;
+    var found = false;
 
     // User.find(async (err, users) => {
     //     for(var i = 0; i < users.length; i++){
@@ -289,9 +291,16 @@ router.post('/updatePassword', authCheck, async function (req, res) {
     //     }
     // });
 
-    if (!foundPassword(password)) {
-        User.find({ shelterName: shelterName }, async (err, users) => {
-
+    // if (!foundPassword(password)) {
+    User.find({ shelterName: shelterName }, async (err, users) => {
+        while (cnt < users.length) {
+            console.log("current: " + users[cnt].userName + ": and checking: " + userName);
+            if (userName == users[cnt].userName) {
+                found = true;
+            }
+            cnt++;
+        }
+        if (!found) {
             try {
                 const hashedPassword = await bcrypt.hash(password, saltRounds)
                 users[0].hashedPassword = hashedPassword;
@@ -304,10 +313,13 @@ router.post('/updatePassword', authCheck, async function (req, res) {
                 console.log(ex);
                 return res.send({ error: ex });
             }
-        });
-    } else {
-        return res.status(400).send({ message: 'Password Taken' });
-    }
+        } else {
+            return res.status(400).send({ message: 'Password Taken' });
+        }
+    });
+    // } else {
+    //     return res.status(400).send({ message: 'Password Taken' });
+    // }
 
 
 });
