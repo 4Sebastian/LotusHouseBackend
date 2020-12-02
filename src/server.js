@@ -40,7 +40,8 @@ connection.once('open', () => {
 
 //Arrays
 router.route('/events/:shelterName/:formDate').get((req, res) => {
-    Event.find({ formDate: req.params.formDate }, (err, events) => {
+    const shelterName = req.body.shelterName;
+    Event.find({ formDate: req.params.formDate, shelterName: shelterName }, (err, events) => {
         if (err)
             console.log(err);
         else
