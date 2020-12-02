@@ -81,8 +81,8 @@ router.route('/rooms/:shelterName/:formDate/:id').get((req, res) => {
 //Add to each Array
 router.route('/events/:shelterName/:formDate/add').post((req, res) => {
     let event = new Event(req.body);
-    event.formDate = req.params.formDate;
-    event.shelterName = req.params.shelterName;
+    // event.formDate = req.params.formDate;
+    // event.shelterName = req.params.shelterName;
     event.save()
         .then(event => {
             res.status(200).json({ 'event': 'Added succesfully' });
@@ -94,8 +94,8 @@ router.route('/events/:shelterName/:formDate/add').post((req, res) => {
 
 router.route('/rooms/:shelterName/:formDate/add').post((req, res) => {
     let room = new Room(req.body);
-    room.formDate = req.params.formDate;
-    room.shelterName = req.params.shelterName;
+    // room.formDate = req.params.formDate;
+    // room.shelterName = req.params.shelterName;
     room.save()
         .then(room => {
             res.status(200).json({ 'issue': 'Added succesfully' });

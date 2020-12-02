@@ -11,6 +11,12 @@ let Event = new Schema({
     },
     description: {
         type: String
+    },
+    shelterName: {
+        type: String
+    },
+    formDate: {
+        type: String
     }
 });
 

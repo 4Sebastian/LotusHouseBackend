@@ -11,6 +11,12 @@ let Room = new Schema({
     }, 
     events: {
         type: [String]
+    },
+    shelterName: {
+        type: String
+    },
+    formDate: {
+        type: String
     }
 });
 
