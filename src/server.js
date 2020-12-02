@@ -41,6 +41,7 @@ connection.once('open', () => {
 //Arrays
 router.route('/events/:shelterName/:formDate').get((req, res) => {
     const shelterName = req.params.shelterName;
+    console.log(shelterName);
     Event.find({ formDate: req.params.formDate, shelterName: shelterName }, (err, events) => {
         if (err)
             console.log(err);
